@@ -55,8 +55,7 @@ namespace Lab2
                     {
                         Duration = g.Key,
                         TotalSubscriptions = g.Count()
-                    })
-                    .ToList();
+                    });
 
                 foreach (var group in groupedSubscriptions)
                 {
@@ -195,6 +194,8 @@ namespace Lab2
             {
                 var publicationTypesToUpdate = dbContext.PublicationTypes
                             .Where(pt => pt.Type == condition);
+
+                
 
                 foreach (var publicationType in publicationTypesToUpdate)
                 {
