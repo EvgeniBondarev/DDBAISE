@@ -15,15 +15,20 @@ internal class Program
         string connection = builder.Configuration.GetConnectionString("SqlServerConnection");
         services.AddDbContext<SubsCityContext>(options => options.UseSqlServer(connection));
 
+        
+
         services.AddMemoryCache();
 
         services.AddDistributedMemoryCache();
         services.AddScoped<CachedSubsCityDb>();
         services.AddSession();
 
-        var app = builder.Build();
+        builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddSession(); 
 
-        //app.MapGet("/", () => "Hello World!");
+        var app = builder.Build();
+        app.UseSession();
+
 
         app.Map("/info", (appBuilder) =>
         {
@@ -42,291 +47,123 @@ internal class Program
             });
         });
 
-        app.Map("/employee", (appBuilder) =>
-        {
-            appBuilder.Run(async (context) =>
-            {
-                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
-
-                IEnumerable<Employee> employees = cachedSubsCityDb.GetEmployee(CacheKey.Employee);
-
-                string HtmlString = "<HTML><HEAD><TITLE>Работники</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список работников</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Имя</TH>";
-                HtmlString += "<TH>Фамилия</TH>";
-                HtmlString += "<TH>Отчество</TH>";;
-                HtmlString += "</TR>";
-                foreach (var employee in employees)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + employee.Id + "</TD>";
-                    HtmlString += "<TD>" + employee.Name + "</TD>";
-                    HtmlString += "<TD>" + employee.Middlename + "</TD>";
-                    HtmlString += "<TD>" + employee.Surname + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
-
-                await context.Response.WriteAsync(HtmlString);
-
-            });
-        });
-
-        app.Map("/employee_posutions", (appBuilder) =>
-        {
-            appBuilder.Run(async (context) =>
-            {
-                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
-
-                IEnumerable<EmployeePosition> employeePositions = cachedSubsCityDb.GetEmployeePosition(CacheKey.EmployeePosition);
-
-                string HtmlString = "<HTML><HEAD><TITLE>Должности</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список должностей</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Должности</TH>";; 
-                HtmlString += "</TR>";
-                foreach (var position in employeePositions)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + position.Id + "</TD>";
-                    HtmlString += "<TD>" + position.Position + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
-
-                await context.Response.WriteAsync(HtmlString);
-
-            });
-        });
-
-        app.Map("/office", (appBuilder) =>
-        {
-            appBuilder.Run(async (context) =>
-            {
-                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
-
-                IEnumerable<Office> offices = cachedSubsCityDb.GetOffice(CacheKey.Office);
-
-                string HtmlString = "<HTML><HEAD><TITLE>Должности</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список должностей</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Владелец</TH>";
-                HtmlString += "<TH>Адрес</TH>";
-                HtmlString += "<TH>Мобильный телефон</TH>";
-                HtmlString += "<TH>email</TH>";
-                HtmlString += "</TR>";
-                foreach (var office in offices)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + office.Id + "</TD>";
-                    HtmlString += "<TD>" + $"{office.OnwnerSurname} {office.OwnerName} {office.OwnerMiddlename}" + "</TD>";
-                    HtmlString += "<TD>" + $"{office.StreetName}" + "</TD>";
-                    HtmlString += "<TD>" + office.MobilePhone + "</TD>";
-                    HtmlString += "<TD>" + office.Email + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
-
-                await context.Response.WriteAsync(HtmlString);
-
-            });
-        });
-
-        app.Map("/publication", (appBuilder) =>
-        {
-            appBuilder.Run(async (context) =>
-            {
-                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
-
-                IEnumerable<Publication> publications = cachedSubsCityDb.GetPublication(CacheKey.Publication);
-
-                string HtmlString = "<HTML><HEAD><TITLE>Издания</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список издания</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Название</TH>";
-                HtmlString += "<TH>Цена</TH>";
-                HtmlString += "</TR>";
-                foreach (var publication in publications)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + publication.Id + "</TD>";
-                    HtmlString += "<TD>" + publication.Name + "</TD>";
-                    HtmlString += "<TD>" + publication.Price + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
-
-                await context.Response.WriteAsync(HtmlString);
-
-            });
-        });
-
-        app.Map("/publication_type", (appBuilder) =>
-        {
-            appBuilder.Run(async (context) =>
-            {
-                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
-
-                IEnumerable<PublicationType> publicationsTypes = cachedSubsCityDb.GetPublicationType(CacheKey.PyblicationType);
-
-                string HtmlString = "<HTML><HEAD><TITLE>Типы изданий</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список типов изданий</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Тип</TH>";
-                HtmlString += "</TR>";
-                foreach (var publicationType in publicationsTypes)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + publicationType.Id + "</TD>";
-                    HtmlString += "<TD>" + publicationType.Type + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
-
-                await context.Response.WriteAsync(HtmlString);
-
-            });
-        });
-
-        app.Map("/recipient", (appBuilder) =>
-        {
-            appBuilder.Run(async (context) =>
-            {
-                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
-
-                IEnumerable<Recipient> recipients = cachedSubsCityDb.GetRecipient(CacheKey.Recipient);
-
-                string HtmlString = "<HTML><HEAD><TITLE>Получатели</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список получателей</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Получатель</TH>";
-                HtmlString += "<TH>Адрес</TH>";
-                HtmlString += "<TH>Мобильный телефон</TH>";
-                HtmlString += "<TH>email</TH>";
-                HtmlString += "</TR>";
-                foreach (var recipient in recipients)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + recipient.Id + "</TD>";
-                    HtmlString += "<TD>" + $"{recipient.Surname} {recipient.Name} {recipient.Middlename}" + "</TD>";
-                    HtmlString += "<TD>" + $"{recipient.AddressId}" + "</TD>";
-                    HtmlString += "<TD>" + recipient.MobilePhone + "</TD>";
-                    HtmlString += "<TD>" + recipient.Email + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
-
-                await context.Response.WriteAsync(HtmlString);
-
-            });
-        });
-
-        app.Map("/recipient_address", (appBuilder) =>
-        {
-            appBuilder.Run(async (context) =>
-            {
-                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
-
-                IEnumerable<RecipientAddress> recipientAddresses = cachedSubsCityDb.GetRecipientAddress(CacheKey.RecipientAddress);
-
-                string HtmlString = "<HTML><HEAD><TITLE>Адреса получателей</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список адресов получателей</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Улица</TH>";
-                HtmlString += "<TH>Дом</TH>";
-                HtmlString += "<TH>Квартира</TH>";
-                HtmlString += "</TR>";
-                foreach (var recipientAddress in recipientAddresses)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + recipientAddress.Id + "</TD>";
-                    HtmlString += "<TD>" + recipientAddress.Street + "</TD>";
-                    HtmlString += "<TD>" + recipientAddress.House + "</TD>";
-                    HtmlString += "<TD>" + recipientAddress.Apartment + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
-
-                await context.Response.WriteAsync(HtmlString);
-
-            });
-        });
-
         app.Map("/subscription", (appBuilder) =>
         {
             appBuilder.Run(async (context) =>
             {
                 CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
+                TableWriter tableWriter = new TableWriter();
 
                 IEnumerable<Subscription> subscriptions = cachedSubsCityDb.GetSubscription(CacheKey.Subscription);
+                string HtmlString = tableWriter.WriteTable(subscriptions);
 
-                string HtmlString = "<HTML><HEAD><TITLE>Подписки</TITLE></HEAD>" +
-                    "<META http-equiv='Content-Type' content='text/html; charset=utf-8'/>" +
-                    "<BODY><H1>Список подписок</H1>" +
-                    "<TABLE BORDER=1>";
-                HtmlString += "<TR>";
-                HtmlString += "<TH>ID</TH>";
-                HtmlString += "<TH>Продолжительность</TH>";
-                HtmlString += "<TH>Дата подписки</TH>";
-                HtmlString += "<TH>Получатель</TH>";
-                HtmlString += "<TH>Издание</TH>";
-                HtmlString += "<TH>Офис</TH>";
-                HtmlString += "</TR>";
-                foreach (var subscription in subscriptions)
-                {
-                    HtmlString += "<TR>";
-                    HtmlString += "<TD>" + subscription.Id + "</TD>";
-                    HtmlString += "<TD>" + subscription.Duration + "</TD>";
-                    HtmlString += "<TD>" + subscription.SubscriptionStartDate + "</TD>";
-                    HtmlString += "<TD>" + subscription.Recipient + "</TD>";
-                    HtmlString += "<TD>" + subscription.Publication + "</TD>";
-                    HtmlString += "<TD>" + subscription.Office + "</TD>";
-                    HtmlString += "</TR>";
-                }
-                HtmlString += "</TABLE>";
-                HtmlString += "<BR><A href='/'>Главная</A></BR>";
-                HtmlString += "</BODY></HTML>";
+                Console.WriteLine(HtmlString == null);
 
                 await context.Response.WriteAsync(HtmlString);
-
             });
         });
+
+        app.Map("/searchPublicationName", (appBuilder) =>
+        {
+            appBuilder.Run(async (context) =>
+            {
+                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
+                IEnumerable<Subscription> subscriptions = cachedSubsCityDb.GetSubscription(CacheKey.Subscription);
+
+                TableWriter tableWriter = new TableWriter();
+
+                string formHtml = "<form method='post' action='/searchPublicationName'>" +
+                                  "<label for='name'>Название издания:</label>";
+
+
+
+                if (context.Request.Cookies.TryGetValue("name", out var input_value))
+                {
+                    formHtml += $"<input type='text' name='name' value='{input_value}'><br><br>" +
+                               "<input type='submit' value='Поиск'>" +
+                               "</form>"; 
+                }
+                else
+                {
+                    formHtml += "<input type='text' name='name'><br><br>" + 
+                                "<input type='submit' value='Поиск'>" +
+                                "</form>";
+                }
+
+
+                if (context.Request.Method == "POST")
+                {
+                    string name = context.Request.Form["name"];
+
+                    context.Response.Cookies.Append("name", name);
+
+                    IEnumerable<Subscription> subscriptionsByPublications = subscriptions.Where(s => s.Publication.Name == name);
+
+                    string HtmlString = tableWriter.WriteTable(subscriptionsByPublications, formHtml);
+
+                   await context.Response.WriteAsync(HtmlString);
+                }
+                else
+                {
+                    string HtmlString = tableWriter.WriteTable(subscriptions, formHtml);
+                   
+                    await context.Response.WriteAsync(HtmlString);
+                }
+            });
+        });
+        app.Map("/searchDuration", (appBuilder) =>
+        {
+            appBuilder.Run(async (context) =>
+            {
+                CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
+                IEnumerable<Subscription> subscriptions = cachedSubsCityDb.GetSubscription(CacheKey.Subscription);
+
+                TableWriter tableWriter = new TableWriter();
+
+                string formHtml = "<form method='post' action='/searchDuration'>" +
+                                    "<label for='name'>Минимальная продолжителность:</label>";
+                                    
+
+                if (context.Session.Keys.Contains("duration"))
+                {
+                    int duration = Int32.Parse(context.Session.GetString("duration"));
+
+                    formHtml += $"<input type='number' name='duration' value='{duration}'><br><br>" +
+                                "<input type='submit' value='Поиск'>" +
+                                 "</form>";
+                }
+                else
+                {
+                    formHtml += "<input type='number' name='duration'><br><br>" +
+                                "<input type='submit' value='Поиск'>" +
+                                 "</form>";
+                }
+
+                if (context.Request.Method == "POST")
+                {
+                    int duration = Int32.Parse(context.Request.Form["duration"]);
+
+                    context.Session.SetString("duration", duration.ToString());
+
+                    IEnumerable<Subscription> subscriptionsByPublications = subscriptions.Where(s => s.Duration >= duration);
+
+                    string HtmlString = tableWriter.WriteTable(subscriptionsByPublications, formHtml);
+
+
+                    await context.Response.WriteAsync(HtmlString);
+                }
+                else
+                {
+
+                    string HtmlString = tableWriter.WriteTable(subscriptions, formHtml);
+
+
+                    await context.Response.WriteAsync(HtmlString);
+                }
+            });
+        });
+
+
 
 
 
@@ -335,13 +172,9 @@ internal class Program
             
             CachedSubsCityDb cachedSubsCityDb = context.RequestServices.GetService<CachedSubsCityDb>();
 
-            cachedSubsCityDb.AddEmployeeToCache(CacheKey.Employee);
-            cachedSubsCityDb.AddEmployeePositionToCache(CacheKey.EmployeePosition);
             cachedSubsCityDb.AddOfficeToCache(CacheKey.Office);
             cachedSubsCityDb.AddPuplicationToCache(CacheKey.Publication);
-            cachedSubsCityDb.AddPuplicationTypeToCache(CacheKey.PyblicationType);
             cachedSubsCityDb.AddRecipientToCache(CacheKey.Recipient);
-            cachedSubsCityDb.AddRecipientAddressToCache(CacheKey.RecipientAddress); 
             cachedSubsCityDb.AddSubscriptionToCache(CacheKey.Subscription);
 
             string HtmlString = "<HTML><HEAD><TITLE>Емкости</TITLE></HEAD>" +
@@ -349,14 +182,10 @@ internal class Program
             "<BODY><H1>Главная</H1>";
             HtmlString += "<H2>Данные записаны в кэш сервера</H2>";
             HtmlString += "<BR><A href='/'>Главная</A></BR>";
-            HtmlString += "<BR><A href='/employee'>Работники</A></BR>";
-            HtmlString += "<BR><A href='/employee_posutions'>Должности</A></BR>";
-            HtmlString += "<BR><A href='/office'>Офисы</A></BR>";
-            HtmlString += "<BR><A href='/publication'>Издания</A></BR>";
-            HtmlString += "<BR><A href='/publication_type'>Типы изданий</A></BR>";
-            HtmlString += "<BR><A href='/recipient'>Получатели</A></BR>"; 
-            HtmlString += "<BR><A href='/recipient_address'>Адреса получателей</A></BR>";
-            HtmlString += "<BR><A href='/subscription'>Подписки</A></BR>";
+            HtmlString += "<BR><A href='/info'>Информация</A></BR>";
+            HtmlString += "<BR><A href='/subscription'>Все подписки</A></BR>";
+            HtmlString += "<BR><A href='/searchPublicationName'>Поиск по изданию</A></BR>";
+            HtmlString += "<BR><A href='/searchDuration'>Поиск по продолжиьельности</A></BR>";
             HtmlString += "</BODY></HTML>";
 
             return context.Response.WriteAsync(HtmlString);

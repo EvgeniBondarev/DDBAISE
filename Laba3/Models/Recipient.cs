@@ -22,4 +22,9 @@ public partial class Recipient
     public virtual RecipientAddress Address { get; set; } = null!;
 
     public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+
+    public override string ToString()
+    {
+        return $"{Surname} {Name} {Middlename}";
+    }
 }

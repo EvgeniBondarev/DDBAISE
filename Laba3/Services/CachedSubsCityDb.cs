@@ -15,77 +15,9 @@ namespace Laba3.Services
             _saveTime = 2 * 2 + 240;
         }
        
-        public void AddEmployeeToCache(CacheKey key, int rowsNumber = 20)
-        {
-            if(!_memoryCache.TryGetValue(key, out IEnumerable<Employee> cachedEmployee)) {
-                cachedEmployee = _dbContext.Employees.Take(rowsNumber).ToList();
+     
 
-                if (cachedEmployee != null)
-                {
-                    _memoryCache.Set(key, cachedEmployee, new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_saveTime)
-                    });
-                }
-                Console.WriteLine("Таблица Employee занесена в кеш");
-            }
-            else {
-                Console.WriteLine("Таблица Employee уже находится в кеше");
-            }
-        }
-
-        public IEnumerable<Employee> GetEmployee(CacheKey key, int rowsNumber = 20)
-        {
-            IEnumerable<Employee> employes;
-            if (!_memoryCache.TryGetValue(key, out employes))
-            {
-                employes = _dbContext.Employees.Take(rowsNumber).ToList();
-                if (employes != null)
-                {
-                    _memoryCache.Set(key, employes,
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));
-                }
-            }
-            return employes;
-        }
-
-        public void AddEmployeePositionToCache(CacheKey key, int rowsNumber = 20)
-        {
-            if (!_memoryCache.TryGetValue(key, out IEnumerable<EmployeePosition> cachedEmployeePositions))
-            {
-                cachedEmployeePositions = _dbContext.EmployeePositions.Take(rowsNumber).ToList();
-
-                if (cachedEmployeePositions != null)
-                {
-                    _memoryCache.Set(key, cachedEmployeePositions, new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_saveTime)
-                    });
-                }
-                Console.WriteLine("Таблица EmployeePositions занесена в кеш");
-            }
-            else
-            {
-                Console.WriteLine("Таблица EmployeePositions уже находится в кеше");
-            }
-        }
-
-        public IEnumerable<EmployeePosition> GetEmployeePosition(CacheKey key, int rowsNumber = 20)
-        {
-            IEnumerable<EmployeePosition> employeePositions;
-            if (!_memoryCache.TryGetValue(key, out employeePositions))
-            {
-                employeePositions = _dbContext.EmployeePositions.Take(rowsNumber).ToList();
-                if (employeePositions != null)
-                {
-                    _memoryCache.Set(key, employeePositions,
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));
-                }
-            }
-            return employeePositions;
-        }
-
-        public void AddOfficeToCache(CacheKey key, int rowsNumber = 20)
+        public void AddOfficeToCache(CacheKey key, int rowsNumber = 100)
         {
             if (!_memoryCache.TryGetValue(key, out IEnumerable<Office> cachedOffice))
             {
@@ -105,7 +37,7 @@ namespace Laba3.Services
                 Console.WriteLine("Таблица Office уже находится в кеше");
             }
         }
-        public IEnumerable<Office> GetOffice(CacheKey key, int rowsNumber = 20)
+        public IEnumerable<Office> GetOffice(CacheKey key, int rowsNumber = 100)
         {
             IEnumerable<Office> offices;
             if (!_memoryCache.TryGetValue(key, out offices))
@@ -120,7 +52,7 @@ namespace Laba3.Services
             return offices;
         }
 
-        public void AddPuplicationToCache(CacheKey key, int rowsNumber = 20)
+        public void AddPuplicationToCache(CacheKey key, int rowsNumber = 100)
         {
             if (!_memoryCache.TryGetValue(key, out IEnumerable<Publication> cachedPublication))
             {
@@ -140,7 +72,7 @@ namespace Laba3.Services
                 Console.WriteLine("Таблица Puplication уже находится в кеше");
             }
         }
-        public IEnumerable<Publication> GetPublication(CacheKey key, int rowsNumber = 20)
+        public IEnumerable<Publication> GetPublication(CacheKey key, int rowsNumber = 100)
         {
             IEnumerable<Publication> publications;
             if (!_memoryCache.TryGetValue(key, out publications))
@@ -155,43 +87,7 @@ namespace Laba3.Services
             return publications;
         }
 
-        public void AddPuplicationTypeToCache(CacheKey key, int rowsNumber = 20)
-        {
-            if (!_memoryCache.TryGetValue(key, out IEnumerable<PublicationType> cachedPublicationTypes))
-            {
-                cachedPublicationTypes = _dbContext.PublicationTypes.Take(rowsNumber).ToList();
-
-                if (cachedPublicationTypes != null)
-                {
-                    _memoryCache.Set(key, cachedPublicationTypes, new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_saveTime)
-                    });
-                }
-                Console.WriteLine("Таблица PublicationType занесена в кеш");
-            }
-            else
-            {
-                Console.WriteLine("Таблица PublicationTypes уже находится в кеше");
-            }
-        }
-
-        public IEnumerable<PublicationType> GetPublicationType(CacheKey key, int rowsNumber = 20)
-        {
-            IEnumerable<PublicationType> publicationTypes;
-            if (!_memoryCache.TryGetValue(key, out publicationTypes))
-            {
-                publicationTypes = _dbContext.PublicationTypes.Take(rowsNumber).ToList();
-                if (publicationTypes != null)
-                {
-                    _memoryCache.Set(key, publicationTypes,
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));
-                }
-            }
-            return publicationTypes;
-        }
-
-        public void AddRecipientToCache(CacheKey key, int rowsNumber = 20)
+        public void AddRecipientToCache(CacheKey key, int rowsNumber = 100)
         {
             if (!_memoryCache.TryGetValue(key, out IEnumerable<Recipient> cachedRecipient))
             {
@@ -212,7 +108,7 @@ namespace Laba3.Services
             }
         }
 
-        public IEnumerable<Recipient> GetRecipient(CacheKey key, int rowsNumber = 20)
+        public IEnumerable<Recipient> GetRecipient(CacheKey key, int rowsNumber = 100)
         {
             IEnumerable<Recipient> recipients;
             if (!_memoryCache.TryGetValue(key, out recipients))
@@ -227,41 +123,7 @@ namespace Laba3.Services
             return recipients;
         }
 
-        public void AddRecipientAddressToCache(CacheKey key, int rowsNumber = 20)
-        {
-            if (!_memoryCache.TryGetValue(key, out IEnumerable<RecipientAddress> cachedRecipientAddress))
-            {
-                cachedRecipientAddress = _dbContext.RecipientAddresses.Take(rowsNumber).ToList();
-
-                if (cachedRecipientAddress != null)
-                {
-                    _memoryCache.Set(key, cachedRecipientAddress, new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_saveTime)
-                    });
-                }
-                Console.WriteLine("Таблица RecipientAddress занесена в кеш");
-            }
-            else
-            {
-                Console.WriteLine("Таблица RecipientAddress уже находится в кеше");
-            }
-        }
-
-        public IEnumerable<RecipientAddress> GetRecipientAddress(CacheKey key, int rowsNumber = 20)
-        {
-            IEnumerable<RecipientAddress> recipientAddresses;
-            if (!_memoryCache.TryGetValue(key, out recipientAddresses))
-            {
-                recipientAddresses = _dbContext.RecipientAddresses.Take(rowsNumber).ToList();
-                if (recipientAddresses != null)
-                {
-                    _memoryCache.Set(key, recipientAddresses,
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));
-                }
-            }
-            return recipientAddresses;
-        }
+  
 
         public void AddSubscriptionToCache(CacheKey key, int rowsNumber = 20)
         {
