@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Laba3.Services
 {
-    public class CachedSubsCityDb
+    public class CachedSubsCityDb: ICachedSubsCityDb
     {
         private readonly SubsCityContext _dbContext;
         private readonly IMemoryCache _memoryCache;
