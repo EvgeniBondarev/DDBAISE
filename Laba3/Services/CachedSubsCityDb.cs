@@ -21,7 +21,7 @@ namespace Laba3.Services
         {
             if (!_memoryCache.TryGetValue(key, out IEnumerable<Office> cachedOffice))
             {
-                cachedOffice = _dbContext.Offices.Take(rowsNumber).ToList();
+                cachedOffice = _dbContext.Office.Take(rowsNumber).ToList();
 
                 if (cachedOffice != null)
                 {
@@ -42,7 +42,7 @@ namespace Laba3.Services
             IEnumerable<Office> offices;
             if (!_memoryCache.TryGetValue(key, out offices))
             {
-                offices = _dbContext.Offices.Take(rowsNumber).ToList();
+                offices = _dbContext.Office.Take(rowsNumber).ToList();
                 if (offices != null)
                 {
                     _memoryCache.Set(key, offices,
@@ -56,7 +56,7 @@ namespace Laba3.Services
         {
             if (!_memoryCache.TryGetValue(key, out IEnumerable<Publication> cachedPublication))
             {
-                cachedPublication = _dbContext.Publications.Take(rowsNumber).ToList();
+                cachedPublication = _dbContext.Publication.Take(rowsNumber).ToList();
 
                 if (cachedPublication != null)
                 {
@@ -77,7 +77,7 @@ namespace Laba3.Services
             IEnumerable<Publication> publications;
             if (!_memoryCache.TryGetValue(key, out publications))
             {
-                publications = _dbContext.Publications.Take(rowsNumber).ToList();
+                publications = _dbContext.Publication.Take(rowsNumber).ToList();
                 if (publications != null)
                 {
                     _memoryCache.Set(key, publications,
@@ -91,7 +91,7 @@ namespace Laba3.Services
         {
             if (!_memoryCache.TryGetValue(key, out IEnumerable<Recipient> cachedRecipient))
             {
-                cachedRecipient = _dbContext.Recipients.Take(rowsNumber).ToList();
+                cachedRecipient = _dbContext.Recipient.Take(rowsNumber).ToList();
 
                 if (cachedRecipient != null)
                 {
@@ -113,7 +113,7 @@ namespace Laba3.Services
             IEnumerable<Recipient> recipients;
             if (!_memoryCache.TryGetValue(key, out recipients))
             {
-                recipients = _dbContext.Recipients.Take(rowsNumber).ToList();
+                recipients = _dbContext.Recipient.Take(rowsNumber).ToList();
                 if (recipients != null)
                 {
                     _memoryCache.Set(key, recipients,
@@ -129,7 +129,7 @@ namespace Laba3.Services
         {
             if (!_memoryCache.TryGetValue(key, out IEnumerable<Subscription> cachedSubscription))
             {
-                cachedSubscription = _dbContext.Subscriptions.Take(rowsNumber).ToList();
+                cachedSubscription = _dbContext.Subscription.Take(rowsNumber).ToList();
 
                 if (cachedSubscription != null)
                 {
@@ -151,7 +151,7 @@ namespace Laba3.Services
             IEnumerable<Subscription> subscriptions;
             if (!_memoryCache.TryGetValue(key, out subscriptions))
             {
-                subscriptions = _dbContext.Subscriptions.Take(rowsNumber).ToList();
+                subscriptions = _dbContext.Subscription.Take(rowsNumber).ToList();
                 if (subscriptions != null)
                 {
                     _memoryCache.Set(key, subscriptions,
