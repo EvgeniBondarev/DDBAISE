@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using PostSity.Data;
+using PostSity.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +16,18 @@ services.AddDbContext<PostCityContext>(options =>
     options.UseSqlServer(connection);
 });
 
+services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+app.UseSession();
+app.UseDbInitializerMiddleware();
 
 
 // Configure the HTTP request pipeline.
@@ -32,8 +41,14 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "Employee",
+    pattern: "{controller=Employee}/{action=ShowTable}");
 
 app.Run();

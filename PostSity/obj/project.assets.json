@@ -641,6 +641,15 @@
           "lib/netstandard2.0/Mono.TextTemplating.dll": {}
         }
       },
+      "System-Web-Helpers.dll/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/Net40/System.Web.Helpers.dll": {}
+        },
+        "runtime": {
+          "lib/Net40/System.Web.Helpers.dll": {}
+        }
+      },
       "System.CodeDom/4.4.0": {
         "type": "package",
         "compile": {
@@ -1992,6 +2001,18 @@
         "mono.texttemplating.nuspec"
       ]
     },
+    "System-Web-Helpers.dll/1.0.0": {
+      "sha512": "YNi625gkYOPE1CN6HdDGW4Ve7/E4xxnBGsnTBdzz91b+Pk0WrE2hPPOrXJc9vTjW2PjRju0TeyUZYtBntYXuVA==",
+      "type": "package",
+      "path": "system-web-helpers.dll/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/Net40/System.Web.Helpers.dll",
+        "system-web-helpers.dll.1.0.0.nupkg.sha512",
+        "system-web-helpers.dll.nuspec"
+      ]
+    },
     "System.CodeDom/4.4.0": {
       "sha512": "2sCCb7doXEwtYAbqzbF/8UAeDRMNmPaQbU2q50Psg1J9KzumyVVCgKQY8s53WIPTufNT0DpSe9QRvVjOzfDWBA==",
       "type": "package",
@@ -2889,7 +2910,8 @@
       "Microsoft.EntityFrameworkCore >= 7.0.13",
       "Microsoft.EntityFrameworkCore.Design >= 7.0.13",
       "Microsoft.EntityFrameworkCore.SqlServer >= 7.0.13",
-      "Microsoft.EntityFrameworkCore.Tools >= 7.0.13"
+      "Microsoft.EntityFrameworkCore.Tools >= 7.0.13",
+      "System-Web-Helpers.dll >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2899,9 +2921,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\PostSity\\PostSity.csproj",
-      "projectName": "PostSity",
-      "projectPath": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\PostSity\\PostSity.csproj",
+      "projectUniqueName": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\PostSity\\PostСity.csproj",
+      "projectName": "PostСity",
+      "projectPath": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\PostSity\\PostСity.csproj",
       "packagesPath": "C:\\Users\\Evgeni\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\PostSity\\obj\\",
       "projectStyle": "PackageReference",
@@ -2956,6 +2978,10 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[7.0.13, )"
+          },
+          "System-Web-Helpers.dll": {
+            "target": "Package",
+            "version": "[1.0.0, )"
           }
         },
         "imports": [
@@ -2980,5 +3006,17 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.416\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Пакет \"System-Web-Helpers.dll 1.0.0\" был восстановлен с помощью \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\", а не целевой платформы проекта \"net6.0\". Этот пакет может быть не полностью совместим с вашим проектом.",
+      "libraryId": "System-Web-Helpers.dll",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
 }

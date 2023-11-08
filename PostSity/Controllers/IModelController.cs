@@ -1,9 +1,9 @@
-﻿namespace PostSity.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace PostSity.Controllers
 {
-    public interface IModelController <T>
+    public interface IModelController 
     {
-        IEnumerable<T> ShowTable();
-        IEnumerable<T> ShowTable(string filter);
-        T ShowTable(int Id);
+        IActionResult ShowTable();
     }
 }
