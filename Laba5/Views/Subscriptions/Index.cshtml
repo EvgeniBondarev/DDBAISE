@@ -1,0 +1,102 @@
+﻿@using Laba4.ViewModels
+
+@model SubscriptionIndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form asp-action="Index">
+    <div>
+        <label>Продолжительность: </label>
+        <input name="duration"  value="@Model.StandardDuration"/><br />
+
+        <label>Год начала подписки: </label>
+        <input name="subscriptionStartDate" value="@Model.StandardSubscriptionStartDate"/><br />
+
+        <label>Название публикации: </label>
+        <input name="publicationName" value="@Model.StandardPublicationName"/><br />
+
+        <label>Цена публикации: </label>
+        <input name="publicationPrice" value="@Model.StandardPublicationPrice"/><br />
+
+        <label>Тип публикации: </label>
+        <input name="publicationType" value="@Model.StandardPublicationType"/><br />
+
+        <input type="submit" value="Фильтр" />
+    </div>
+</form>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Duration
+            </th>
+            <th>
+                SubscriptionStartDate
+            </th>
+            <th>
+                Publication Name
+            </th>
+            <th>
+                Publication Price
+            </th>
+            <th>
+                Publication Type
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Subscription) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration) мес.
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubscriptionStartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Publication.Name)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Publication.Price) руб.
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Publication.Type.Type)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<p>
+    @if (Model.PageViewModel.HasPreviousPage)
+    {
+                        <a asp-action="Index"
+               asp-route-page="@(Model.PageViewModel.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+                            Назад
+                        </a>
+    }
+
+    @if (Model.PageViewModel.HasNextPage)
+    {
+                        <a asp-action="Index"
+               asp-route-page="@(Model.PageViewModel.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+                            Вперед
+                        </a>
+    }
+</p>
