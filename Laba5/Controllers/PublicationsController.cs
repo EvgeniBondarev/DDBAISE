@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Laba4.Models;
 using Laba4.Data.Cache;
 using Laba4.ViewModels;
+using Laba4.ViewModels.Filters;
+using Laba4.ViewModels.Sort;
 
 namespace Laba4.Controllers
 {
@@ -22,7 +24,7 @@ namespace Laba4.Controllers
         }
 
         // GET: Publications
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(SortState sortOrder, int page = 1)
         {
             var data = _cache.Get();
 
@@ -43,6 +45,25 @@ namespace Laba4.Controllers
                     data = data.Where(t => t.Type.Type == publicationTypeCookie);
                 }
             }
+
+            ViewData["PriceSort"] = sortOrder == SortState.PriceAsc ? SortState.PriceDesc : SortState.PriceAsc;
+            ViewData["NameSort"] = sortOrder == SortState.NameAsc ? SortState.NameDesc : SortState.NameAsc;
+            ViewData["TypeSort"] = sortOrder == SortState.TypeAac ? SortState.TypeDesc: SortState.TypeAac;
+
+
+            data = sortOrder switch
+            {
+                SortState.PriceDesc => data.OrderByDescending(p => p.Price),
+                SortState.PriceAsc => data.OrderBy(p => p.Price),
+
+                SortState.NameAsc => data.OrderByDescending(n => n.Name),
+                SortState.NameDesc => data.OrderBy(n => n.Name),
+
+                SortState.TypeAac => data.OrderByDescending(t => t.Type.Type),
+                SortState.TypeDesc => data.OrderBy(t => t.Type.Type)
+
+            };
+
             int pageSize = 10;
 
             var count = data.Count();
@@ -51,31 +72,34 @@ namespace Laba4.Controllers
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
             PublicationIndexViewModel viewModel = new PublicationIndexViewModel(items, pageViewModel)
             {
-                StandardPublicationPrice = publicationPriceCookie,
-                StandardPublicationType = publicationTypeCookie
+                publicationFilter = new PublicationFilterModel()
+                {
+                    PublicationPrice = publicationPriceCookie,
+                    PublicationType = publicationTypeCookie
+                }
             };
 
             return View(viewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> Index(string publicationPrice, string publicationType, int page = 1)
+        public async Task<IActionResult> Index(PublicationFilterModel publicationFilterModel, int page = 1)
         {
 
-            Response.Cookies.Append("PublicationPrice", publicationPrice != null ? publicationPrice : "");
-            Response.Cookies.Append("PublicationType", publicationType != null ? publicationType : "");
+            Response.Cookies.Append("PublicationPrice", publicationFilterModel.PublicationPrice != null ? publicationFilterModel.PublicationPrice : "");
+            Response.Cookies.Append("PublicationType", publicationFilterModel.PublicationType != null ? publicationFilterModel.PublicationType : "");
 
             var data = _cache.Get();
 
             decimal price;
 
-            if (decimal.TryParse(publicationPrice, out price))
+            if (decimal.TryParse(publicationFilterModel.PublicationPrice, out price))
             {
                 data = data.Where(p => p.Price > price);
             }
 
-            if (!string.IsNullOrEmpty(publicationType))
+            if (!string.IsNullOrEmpty(publicationFilterModel.PublicationType))
             {
-                data = data.Where(t => t.Type.Type == publicationType);
+                data = data.Where(t => t.Type.Type == publicationFilterModel.PublicationType);
             }
 
             int pageSize = 10;
@@ -86,8 +110,11 @@ namespace Laba4.Controllers
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
             PublicationIndexViewModel viewModel = new PublicationIndexViewModel(items, pageViewModel)
             {
-                StandardPublicationPrice = publicationPrice,
-                StandardPublicationType = publicationType
+                publicationFilter = new PublicationFilterModel()
+                { 
+                    PublicationPrice = publicationFilterModel.PublicationPrice,
+                    PublicationType = publicationFilterModel.PublicationType
+                }
             };
 
             return View(viewModel);

@@ -15,7 +15,7 @@
 <form asp-action="Index">
     <div>
         <label>Тип публикации: </label>
-        <input name="type" value="@Model.StandardPublicationType"/><br />
+        <input asp-for="@Model.PublicationFilter.PublicationType" name="PublicationType"/><br />
 
         <input type="submit" value="Фильтр" />
     </div>
@@ -24,7 +24,9 @@
     <thead>
         <tr>
             <th>
+                <a asp-action="Index"  asp-route-sortOrder="@ViewBag.TypeSort">
                 Type
+                </a>
             </th>
             <th></th>
         </tr>

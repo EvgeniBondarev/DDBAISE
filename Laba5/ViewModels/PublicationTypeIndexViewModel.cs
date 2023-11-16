@@ -1,10 +1,11 @@
 ﻿using Laba4.Models;
+using Laba4.ViewModels.Filters;
 
 namespace Laba4.ViewModels
 {
     public class PublicationTypeIndexViewModel
     {
-        public string StandardPublicationType;
+        public PublicationTypeFilterModel PublicationFilter;
         public IEnumerable<PublicationType> PublicationTypes { get; }
         public PageViewModel PageViewModel { get; }
         public PublicationTypeIndexViewModel(IEnumerable<PublicationType> types, 

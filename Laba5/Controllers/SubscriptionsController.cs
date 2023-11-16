@@ -11,6 +11,9 @@ using Laba4.ViewModels;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.AspNetCore.Http;
 using System.Data.SqlTypes;
+using Laba4.ViewModels.Filters;
+using Laba4.ViewModels.Sort;
+using Microsoft.Data.SqlClient;
 
 namespace Laba4.Controllers
 {
@@ -25,7 +28,7 @@ namespace Laba4.Controllers
         }
 
         // GET: Subscriptions
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(SortState sortOrder, int page = 1)
         {
             var data = _cache.Get();
 
@@ -33,9 +36,9 @@ namespace Laba4.Controllers
             int year;
             decimal price;
 
-            if (Request.Cookies.TryGetValue("Duration", out string durationCookie))
+            if (Request.Cookies.TryGetValue("Duration", out string subscriptionDurationCookie))
             {
-                if (durationCookie != null && Int32.TryParse(durationCookie, out durationInt))
+                if (subscriptionDurationCookie != null && Int32.TryParse(subscriptionDurationCookie, out durationInt))
                 {
                     data = data.Where(d => d.Duration == durationInt);
                 }
@@ -75,6 +78,27 @@ namespace Laba4.Controllers
                     data = data.Where(pn => pn.Publication.Type.Type == subscriptionTypeCookie);
                 }
             }
+
+            ViewData["PriceSort"] = sortOrder == SortState.PriceAsc ? SortState.PriceDesc : SortState.PriceAsc;
+            ViewData["NameSort"] = sortOrder == SortState.NameAsc ? SortState.NameDesc : SortState.NameAsc;
+            ViewData["DurationSort"] = sortOrder == SortState.DurationAsc ? SortState.PriceDesc : SortState.DurationAsc;
+            ViewData["TypeSort"] = sortOrder == SortState.TypeAac ? SortState.TypeDesc : SortState.TypeAac;
+
+            data = sortOrder switch
+            {
+                SortState.PriceDesc => data.OrderByDescending(p => p.Publication.Price),
+                SortState.PriceAsc => data.OrderBy(p => p.Publication.Price),
+
+                SortState.NameAsc => data.OrderByDescending(n => n.Publication.Name),
+                SortState.NameDesc => data.OrderBy(n => n.Publication.Name),
+
+                SortState.DurationDesc => data.OrderByDescending(d => d.Duration),
+                SortState.DurationAsc => data.OrderBy(d => d.Duration),
+
+                SortState.TypeAac => data.OrderByDescending(t => t.Publication.Type.Type),
+                SortState.TypeDesc => data.OrderBy(t => t.Publication.Type.Type)
+            };
+
             int pageSize = 10;
 
             var count = data.Count();
@@ -83,11 +107,15 @@ namespace Laba4.Controllers
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
             SubscriptionIndexViewModel viewModel = new SubscriptionIndexViewModel(items, pageViewModel)
             {
-                StandardDuration = durationCookie,
-                StandardSubscriptionStartDate = subscriptionStartDateCookie,
-                StandardPublicationName = subscriptionNameCookie,
-                StandardPublicationPrice = subscriptionPriceCookie,
-                StandardPublicationType = subscriptionTypeCookie
+                SubscriptionFilter  = new SubscriptionFilterModel()
+                {
+
+                    Duration = subscriptionDurationCookie,
+                    StartDate = subscriptionStartDateCookie,
+                    PublicationName = subscriptionNameCookie,
+                    PublicationPrice = subscriptionPriceCookie,
+                    PublicationType = subscriptionTypeCookie
+                }
             };
 
             return View(viewModel);
@@ -95,16 +123,14 @@ namespace Laba4.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(string duration, string subscriptionStartDate,
-                                               string publicationName, string publicationPrice, 
-                                               string publicationType, int page = 1)
+        public async Task<IActionResult> Index(SubscriptionFilterModel filterData, int page = 1)     
         {
 
-            Response.Cookies.Append("Duration", duration != null ? duration : "");
-            Response.Cookies.Append("SubscriptionStartDate", subscriptionStartDate != null ? subscriptionStartDate : "");
-            Response.Cookies.Append("SubscriptionName", publicationName != null ? publicationName : "");
-            Response.Cookies.Append("SubscriptionPrice", publicationPrice != null ? publicationPrice : "");
-            Response.Cookies.Append("SubscriptionType", publicationType != null ? publicationType : "");
+            Response.Cookies.Append("Duration", filterData.Duration != null ? filterData.Duration : "");
+            Response.Cookies.Append("SubscriptionStartDate", filterData.StartDate != null ? filterData.StartDate : "");
+            Response.Cookies.Append("SubscriptionName", filterData.PublicationName != null ? filterData.PublicationName : "");
+            Response.Cookies.Append("SubscriptionPrice", filterData.PublicationPrice != null ? filterData.PublicationPrice : "");
+            Response.Cookies.Append("SubscriptionType", filterData.PublicationType != null ? filterData.PublicationType : "");
 
             var data = _cache.Get();
 
@@ -112,12 +138,12 @@ namespace Laba4.Controllers
             int year;
             decimal price;
 
-            if (duration != null && Int32.TryParse(duration, out durationInt))
+            if (filterData.Duration != null && Int32.TryParse(filterData.Duration, out durationInt))
             {
                 data = data.Where(d => d.Duration == durationInt);
             }
 
-            if (int.TryParse(subscriptionStartDate, out year))
+            if (int.TryParse(filterData.StartDate, out year))
             {
                 if (year >= 1 && year <= 9999)
                 {
@@ -125,19 +151,19 @@ namespace Laba4.Controllers
                 }
             }
 
-            if (!string.IsNullOrEmpty(publicationName))
+            if (!string.IsNullOrEmpty(filterData.PublicationName))
             {
-                data = data.Where(pn => pn.Publication.Name == publicationName);
+                data = data.Where(pn => pn.Publication.Name == filterData.PublicationName);
             }
 
-            if (decimal.TryParse(publicationPrice, out price))
+            if (decimal.TryParse(filterData.PublicationPrice, out price))
             {
                 data = data.Where(pp => pp.Publication.Price > price);
             }
 
-            if (!string.IsNullOrEmpty(publicationType))
+            if (!string.IsNullOrEmpty(filterData.PublicationType))
             {
-                data = data.Where(pn => pn.Publication.Type.Type == publicationType);
+                data = data.Where(pn => pn.Publication.Type.Type == filterData.PublicationType);
             }
 
             int pageSize = 10;
@@ -145,14 +171,12 @@ namespace Laba4.Controllers
             var count = data.Count();
             var items = data.Skip((page - 1) * pageSize).Take(pageSize);
 
+
+
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
             SubscriptionIndexViewModel viewModel = new SubscriptionIndexViewModel(items, pageViewModel)
             {
-               StandardDuration = duration,
-               StandardSubscriptionStartDate = subscriptionStartDate,
-               StandardPublicationName = publicationName,
-               StandardPublicationPrice = publicationPrice,
-               StandardPublicationType = publicationType
+                SubscriptionFilter = filterData
             };
 
             return View(viewModel);

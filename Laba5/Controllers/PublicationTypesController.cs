@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Laba4.Models;
 using Laba4.ViewModels;
+using Laba4.ViewModels.Filters;
+using Microsoft.IdentityModel.Tokens;
+using Laba4.ViewModels.Sort;
 
 namespace Laba4.Controllers
 {
@@ -20,7 +23,7 @@ namespace Laba4.Controllers
         }
 
         // GET: PublicationTypes
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(SortState sortOrder, int page = 1)
         {
             int pageSize = 10;
 
@@ -34,30 +37,44 @@ namespace Laba4.Controllers
                 }
             }
 
+
+            ViewData["TypeSort"] = sortOrder == SortState.TypeAac ? SortState.TypeDesc : SortState.TypeAac;
+
+
+            data = sortOrder switch
+            {
+                SortState.TypeAac => data.OrderByDescending(t => t.Type).ToList(),
+                SortState.TypeDesc => data.OrderBy(t => t.Type).ToList()
+
+            };
+
             var count = data.Count();
             var items = data.Skip((page - 1) * pageSize).Take(pageSize);
 
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
             PublicationTypeIndexViewModel viewModel = new PublicationTypeIndexViewModel(items, pageViewModel)
             {
-                StandardPublicationType = type
+                PublicationFilter = new PublicationTypeFilterModel()
+                {
+                    PublicationType = type
+                }
             };
 
             return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(string type,int page = 1)
+        public async Task<IActionResult> Index(PublicationTypeFilterModel publicationTypeFilter,int page = 1)
         {
-            Response.Cookies.Append("Type", type != null ? type : "");
+            Response.Cookies.Append("Type", publicationTypeFilter.PublicationType != null ? publicationTypeFilter.PublicationType : "");
 
             int pageSize = 10;
 
             var data = _context.PublicationTypes.ToList();
 
-            if (!string.IsNullOrEmpty(type))
+            if (!string.IsNullOrEmpty(publicationTypeFilter.PublicationType))
             {
-                data = data.Where(t => t.Type == type).ToList();
+                data = data.Where(t => t.Type == publicationTypeFilter.PublicationType).ToList();
             }
 
             var count = data.Count();
@@ -66,7 +83,10 @@ namespace Laba4.Controllers
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
             PublicationTypeIndexViewModel viewModel = new PublicationTypeIndexViewModel(items, pageViewModel)
             {
-                StandardPublicationType = type
+                PublicationFilter = new PublicationTypeFilterModel() 
+                {
+                    PublicationType = publicationTypeFilter.PublicationType
+                }
             };
 
             return View(viewModel);

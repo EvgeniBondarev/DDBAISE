@@ -1,10 +1,12 @@
 ﻿@using Laba4.ViewModels
+@using Laba4.ViewModels.Filters
 
 @model SubscriptionIndexViewModel
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var FilterModel = ViewData["FilterModel"] as SubscriptionFilterModel;
 }
 
 <h1>Index</h1>
@@ -13,22 +15,22 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-<form asp-action="Index">
+<form asp-action="Index" method="post">
     <div>
         <label>Продолжительность: </label>
-        <input name="duration"  value="@Model.StandardDuration"/><br />
+        <input asp-for="@Model.SubscriptionFilter.Duration" name="Duration"/><br />
 
         <label>Год начала подписки: </label>
-        <input name="subscriptionStartDate" value="@Model.StandardSubscriptionStartDate"/><br />
+        <input asp-for="@Model.SubscriptionFilter.StartDate" name="StartDate"/><br />
 
         <label>Название публикации: </label>
-        <input name="publicationName" value="@Model.StandardPublicationName"/><br />
+        <input asp-for="@Model.SubscriptionFilter.PublicationName" name="PublicationName"/><br />
 
         <label>Цена публикации: </label>
-        <input name="publicationPrice" value="@Model.StandardPublicationPrice"/><br />
+        <input asp-for="@Model.SubscriptionFilter.PublicationPrice" name="PublicationPrice"/><br />
 
         <label>Тип публикации: </label>
-        <input name="publicationType" value="@Model.StandardPublicationType"/><br />
+        <input asp-for="@Model.SubscriptionFilter.PublicationType" name="PublicationType"/><br />
 
         <input type="submit" value="Фильтр" />
     </div>
@@ -39,19 +41,27 @@
     <thead>
         <tr>
             <th>
+                <a asp-action="Index"  asp-route-sortOrder="@ViewBag.DurationSort">
                 Duration
+                </a>
             </th>
             <th>
                 SubscriptionStartDate
             </th>
             <th>
+                <a asp-action="Index"  asp-route-sortOrder="@ViewBag.NameSort">
                 Publication Name
+                </a>
             </th>
             <th>
+                <a asp-action="Index"  asp-route-sortOrder="@ViewBag.PriceSort">
                 Publication Price
+                </a>
             </th>
             <th>
+                <a asp-action="Index"  asp-route-sortOrder="@ViewBag.TypeSort">
                 Publication Type
+                </a>
             </th>
             <th></th>
         </tr>
