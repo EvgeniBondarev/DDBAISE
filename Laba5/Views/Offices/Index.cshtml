@@ -1,0 +1,178 @@
+﻿@using PostCity.ViewModels
+@using PostCity.ViewModels.Sort
+
+@model OfficeIndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<script>
+    function clearForm() {
+        document.getElementById("ownerNameFilter").value = "";
+        document.getElementById("ownerMiddlenameFilter").value = "";
+        document.getElementById("ownerSurnameFilter").value = "";
+        document.getElementById("streetNameFilter").value = "";
+        document.getElementById("mobilePhoneFilter").value = "";
+        document.getElementById("emailFilter").value = "";
+    }
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Filters
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="post">
+                        <div class="mb-2">
+                            <label for="ownerNameFilter" class="form-label">Owner Name:</label>
+                            <input asp-for="@Model.OfficeFilter.OwnerName" id="ownerNameFilter" name="OwnerName" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="ownerMiddlenameFilter" class="form-label">Owner Middlename:</label>
+                            <input asp-for="@Model.OfficeFilter.OwnerMiddlename" id="ownerMiddlenameFilter" name="OwnerMiddlename" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="ownerSurnameFilter" class="form-label">Owner Surname:</label>
+                            <input asp-for="@Model.OfficeFilter.OwnerSurname" id="ownerSurnameFilter" name="OwnerSurname" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="streetNameFilter" class="form-label">Street Name:</label>
+                            <input asp-for="@Model.OfficeFilter.StreetName" id="streetNameFilter" name="StreetName" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="mobilePhoneFilter" class="form-label">Mobile Phone:</label>
+                            <input asp-for="@Model.OfficeFilter.MobilePhone" id="mobilePhoneFilter" name="MobilePhone" class="form-control form-control-sm" pattern="^\+375\d{9}$" title="Enter a valid phone number in the format +375999999999" placeholder="+375000000000" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="emailFilter" class="form-label">Email:</label>
+                            <input asp-for="@Model.OfficeFilter.Email" id="emailFilter" name="Email" class="form-control form-control-sm" type="email" /><br />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button><br />
+                        <a href="#" onclick="clearForm()">Clear Fields</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerNameSort">
+                                @if (ViewBag.OwnerNameSort == OfficeSortState.OwnerNameAsc)
+                                {
+                                    <p>Owner Name ↑</p>
+                                }
+                                else
+                                {
+                                    <p>Owner Name ↓</p>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerMiddlenameSort">
+                                @if (ViewBag.OwnerMiddlenameSort == OfficeSortState.OwnerMiddlenameAsc)
+                                {
+                                    <p>Owner Middlename↑</p>
+                                }
+                                else
+                                {
+                                    <p>Owner Middlename↓</p>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerSurnameSort">
+                                @if (ViewBag.OwnerSurname == OfficeSortState.OwnerSurnameAsc)
+                                {
+                                    <p>Owner Surname ↑</p>
+                                }
+                                else
+                                {
+                                    <p>Owner Surname ↓</p>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.StreetNameSort">
+                                @if (ViewBag.StreetNameSort == OfficeSortState.StreetNameAsc)
+                                {
+                                    <p>Street Name ↑</p>
+                                }
+                                else
+                                {
+                                    <p>Street Name ↓</p>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <p>MobilePhone</p>
+                        </th>
+                        <th>
+                            <p>Email</p>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+            @foreach (var item in Model.Model) {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OwnerName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OwnerMiddlename)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OwnerSurname)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StreetName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MobilePhone)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+            }
+                </tbody>
+            </table>
+            <p>
+                @if (Model.PageViewModel.HasPreviousPage)
+                {
+                    <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+                        Назад
+                    </a>
+                }
+
+                @if (Model.PageViewModel.HasNextPage)
+                {
+                    <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+                        Вперед
+                    </a>
+                }
+            </p>
+        </div>
+    </div>
+</div>

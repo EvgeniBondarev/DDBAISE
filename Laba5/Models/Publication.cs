@@ -1,19 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Laba4.Models;
-
-public partial class Publication
+namespace PostCity.Models
 {
-    public int Id { get; set; }
+    public class Publication
+    {
+        public int Id { get; set; }
 
-    public int TypeId { get; set; }
+        public int TypeId { get; set; }
 
-    public string Name { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; } = null!;
 
-    public decimal Price { get; set; }
+        [Required]
+        [Column(TypeName = "decimal(6, 2)")]
+        public decimal Price { get; set; }
 
-    public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
-    public virtual PublicationType Type { get; set; } = null!;
+        [ForeignKey("TypeId")]
+        public virtual PublicationType Type { get; set; } = null!;
+    }
 }

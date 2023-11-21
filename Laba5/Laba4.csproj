@@ -26,4 +26,24 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Views\Home\Index.cshtml" />
+    <None Include="Views\Home\Privacy.cshtml" />
+    <None Include="Views\Role\Create.cshtml" />
+    <None Include="Views\Role\Edit.cshtml" />
+    <None Include="Views\Role\Index.cshtml" />
+    <None Include="Views\Role\UserList.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_LoginPartial.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="Views\Subscriptions\Create.cshtml" />
+    <None Include="Views\Subscriptions\Delete.cshtml" />
+    <None Include="Views\Subscriptions\Details.cshtml" />
+    <None Include="Views\Subscriptions\Edit.cshtml" />
+    <None Include="Views\Subscriptions\Index.cshtml" />
+    <None Include="Views\_ViewImports.cshtml" />
+    <None Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
 </Project>

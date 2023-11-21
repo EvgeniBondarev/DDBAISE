@@ -1,5 +1,7 @@
 ﻿using Laba4.Models;
 using Laba4.ViewModels.Filters;
+using PostCity.Models;
+using PostCity.ViewModels;
 
 namespace Laba4.ViewModels
 {

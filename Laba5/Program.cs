@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Laba4.Data;
-using Laba4.Data.Cache;
+using PostCity.Data.Cache;
+using PostCity.Data.Cookies;
+using PostCity.Infrastructure.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
+IServiceCollection services = builder.Services;
 
 string connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
 
@@ -19,22 +22,19 @@ builder.Services
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<SubsCityContext>();
 
-builder.Services.AddMemoryCache();
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+services.AddMemoryCache();
+services.AddDistributedMemoryCache();
+services.AddSession();
 
-builder.Services.AddScoped<SubscriptionCache>();
-builder.Services.AddScoped<PublicationCache>();
+services.AddTransient(typeof(FilterBy<>));
+services.AddTransient<CookiesManeger>();
+services.AddTransient(typeof(DatabaseSaveFilter));
 
-builder.Services.AddControllersWithViews(options =>
-{
-    options.CacheProfiles.Add("DbTableCache",
-        new CacheProfile()
-        {
-            Location = ResponseCacheLocation.Any,
-            Duration = 2 * 2 + 240
-        });
-});
+services.AddTransient<SubscriptionCache>();
+services.AddTransient<EmployeeCache>();
+services.AddTransient<OfficeCache>();
+
+services.AddTransient<UserInitializer>();
 
 var app = builder.Build();
 
@@ -44,7 +44,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
-
+app.UseDbInitializerMiddleware();
 app.UseStaticFiles();
 app.UseRouting();
 

@@ -55,6 +55,26 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcSWRlbnRpdHlcUGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Employees/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Employees/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Employees/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Employees/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Employees/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -63,44 +83,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Publications/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25zXENyZWF0ZS5jc2h0bWw=
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Offices/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2ZmaWNlc1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Publications/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25zXERlbGV0ZS5jc2h0bWw=
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Offices/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2ZmaWNlc1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Publications/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25zXERldGFpbHMuY3NodG1s
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Offices/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2ZmaWNlc1xEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Publications/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25zXEVkaXQuY3NodG1s
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Offices/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2ZmaWNlc1xFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Publications/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25zXEluZGV4LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/PublicationTypes/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25UeXBlc1xDcmVhdGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/PublicationTypes/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25UeXBlc1xEZWxldGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/PublicationTypes/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25UeXBlc1xEZXRhaWxzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/PublicationTypes/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25UeXBlc1xFZGl0LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/PublicationTypes/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYXRpb25UeXBlc1xJbmRleC5jc2h0bWw=
+[C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Offices/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2ZmaWNlc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Evgeni/Desktop/labs/C\#/Laba5/Views/Role/Create.cshtml]

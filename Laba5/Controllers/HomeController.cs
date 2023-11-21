@@ -1,7 +1,8 @@
-﻿using Laba4.Data.Cache;
-using Laba4.Models;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using PostCity.Data.Cache;
+using PostCity.Models;
 using System.Diagnostics;
 
 namespace Laba4.Controllers
@@ -9,16 +10,10 @@ namespace Laba4.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly SubscriptionCache _subscriptionCache;
-        private readonly PublicationCache _publicationCache;
-        public HomeController(ILogger<HomeController> logger, SubscriptionCache subscriptionCache, PublicationCache publicationCache)
-        {
-            _logger = logger;
-            _subscriptionCache = subscriptionCache;
-            _publicationCache = publicationCache;
 
-            _subscriptionCache.Set();
-            _publicationCache.Set();            
+        public HomeController(ILogger<HomeController> logger)
+        {
+            _logger = logger;      
         }
 
         public IActionResult Index()

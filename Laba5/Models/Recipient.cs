@@ -1,25 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace Laba4.Models;
-
-public partial class Recipient
+namespace PostCity.Models
 {
-    public int Id { get; set; }
+    public class Recipient
+    {
+        public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
+        [Required]
+        [MaxLength(50)]
+        public string Name { get; set; }
 
-    public string Middlename { get; set; } = null!;
+        [Required]
+        [MaxLength(50)]
+        public string Middlename { get; set; }
 
-    public string Surname { get; set; } = null!;
+        [Required]
+        [MaxLength(50)] 
+        public string Surname { get; set; }
 
-    public int AddressId { get; set; }
+        public int AddressId { get; set; }
 
-    public string MobilePhone { get; set; } = null!;
+        [Required]
+        [MaxLength(15)] 
+        [Phone] 
+        public string MobilePhone { get; set; }
 
-    public string Email { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        [EmailAddress]
+        public string Email { get; set; }
 
-    public virtual RecipientAddress Address { get; set; } = null!;
+        [ForeignKey("AddressId")]
+        public virtual RecipientAddress Address { get; set; }
 
-    public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+
+        public override string ToString()
+        {
+            return $"{Surname} {Name}";
+        }
+        public string FullName
+        {
+            get { return $"{Surname} {Name} {Middlename}"; }
+        }
+    }
 }

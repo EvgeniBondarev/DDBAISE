@@ -1,23 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace Laba4.Models;
-
-public partial class Employee
+namespace PostCity.Models
 {
-    public int Id { get; set; }
+    public class Employee
+    {
+        public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
+        [Required]
+        [MaxLength(50)] 
+        public string Name { get; set; }
 
-    public string Middlename { get; set; } = null!;
+        [Required]
+        [MaxLength(50)] 
+        public string Middlename { get; set; }
 
-    public string Surname { get; set; } = null!;
+        [Required]
+        [MaxLength(50)] 
+        public string Surname { get; set; }
 
-    public int PositionId { get; set; }
+        public int PositionId { get; set; }
 
-    public int OfficeId { get; set; }
+        public int OfficeId { get; set; }
 
-    public Office Office { get; set; } = null!;
+        [ForeignKey("OfficeId")] 
+        public Office? Office { get; set; }
 
-    public EmployeePosition Position { get; set; } = null!;
+        [ForeignKey("PositionId")] 
+        public EmployeePosition? Position { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Surname} {Name}";
+        }
+        public string FullName
+        {
+            get { return $"{Surname} {Name} {Middlename}"; }
+        }
+
+    }
 }
+

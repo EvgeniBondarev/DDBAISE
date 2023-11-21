@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Laba4.Models;
-
-public partial class RecipientAddress
+namespace PostCity.Models
 {
-    public int Id { get; set; }
+    public class RecipientAddress
+    {
+        public int Id { get; set; }
 
-    public string? Street { get; set; }
+        [Required]
+        [MaxLength(255)] 
+        public string Street { get; set; }
 
-    public int? House { get; set; }
+        [Required]
+        public int House { get; set; }
 
-    public int? Apartment { get; set; }
+        public int Apartment { get; set; }
 
-    public virtual ICollection<Recipient> Recipients { get; set; } = new List<Recipient>();
+        public virtual ICollection<Recipient> Recipients { get; set; } = new List<Recipient>();
+    }
 }

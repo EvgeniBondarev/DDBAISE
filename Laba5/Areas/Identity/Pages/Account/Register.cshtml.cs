@@ -119,12 +119,15 @@ namespace Laba4.Areas.Identity.Pages.Account
 
             Input = new InputModel()
             {
-                RoleList = _roleManager.Roles.Select(r => r.Name).Select(i => new SelectListItem
-                {
-                    Text = i,
-                    Value = i
-                })
+                RoleList = _roleManager.Roles
+                    .Where(r => r.Name != "Admin")
+                    .Select(r => new SelectListItem
+                    {
+                        Text = r.Name,
+                        Value = r.Name
+                    })
             };
+
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)

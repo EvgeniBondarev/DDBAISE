@@ -1,18 +1,16 @@
-﻿using Laba4.Models;
-using Laba4.ViewModels.Filters;
+﻿using PostCity.Models;
+using PostCity.ViewModels.Filters;
 
-namespace Laba4.ViewModels
+namespace PostCity.ViewModels
 {
-    public class SubscriptionIndexViewModel
+    public class SubscriptionIndexViewModel : IndexViewModel<Subscription>
     {
-        public SubscriptionFilterModel SubscriptionFilter;
-        public IEnumerable<Subscription> Subscription { get; }
-        public PageViewModel PageViewModel { get; }
-        public SubscriptionIndexViewModel(IEnumerable<Subscription> subscriptions, 
-                                         PageViewModel viewModel)
+        public SubscriptionFilterModel SubscriptionFilter { get; set; }
+
+        public SubscriptionIndexViewModel(IEnumerable<Subscription> subscriptions, PageViewModel pageViewModel)
+            : base(subscriptions, pageViewModel)
         {
-            Subscription = subscriptions;
-            PageViewModel = viewModel;
         }
     }
 }
+

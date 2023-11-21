@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Laba4.Models;
-
-public partial class PublicationType
+namespace PostCity.Models
 {
-    public int Id { get; set; }
+    public class PublicationType
+    {
+        public int Id { get; set; }
 
-    public string Type { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        public string Type { get; set; } = null!;
 
-    public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
+        public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
+    }
 }

@@ -1,4 +1,4 @@
-﻿namespace Laba4.ViewModels
+﻿namespace PostCity.ViewModels
 {
     public class PageViewModel
     {

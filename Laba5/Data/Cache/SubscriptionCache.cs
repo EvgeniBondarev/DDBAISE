@@ -1,12 +1,14 @@
 ﻿using Laba4.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using PostCity.Data;
+using PostCity.Models;
 
-namespace Laba4.Data.Cache
+namespace PostCity.Data.Cache
 {
     public class SubscriptionCache : AppCache<Subscription>
     {
-        public SubscriptionCache(SubsCityContext subsCityContext, IMemoryCache memoryCache) : base(subsCityContext, memoryCache)
+        public SubscriptionCache(SubsCityContext db, IMemoryCache memoryCache) : base(db, memoryCache)
         {
         }
 
@@ -23,9 +25,20 @@ namespace Laba4.Data.Cache
 
         public override IEnumerable<Subscription> Set()
         {
-            var subscriptions = _subsCityContext.Subscriptions.Include(p => p.Publication).ThenInclude(t => t.Type).ToList();
+            var subscriptions = _db.Subscriptions.Include(s => s.Employee)
+                                                 .Include(s => s.Office)
+                                                 .Include(s => s.Publication)
+                                                 .Include(s => s.Recipient).ToList();
             _cache.Set("Subscriptions", subscriptions, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));
             return subscriptions;
         }
+
+        public override IEnumerable<Subscription> Set(IEnumerable<Subscription> subscriptions)
+        {
+            _cache.Set("Subscriptions", subscriptions, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));
+            return subscriptions;
+        }
+
+
     }
 }

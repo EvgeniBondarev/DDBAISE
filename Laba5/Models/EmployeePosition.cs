@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Laba4.Models;
-
-public partial class EmployeePosition
+namespace PostCity.Models
 {
-    public int Id { get; set; }
+    public class EmployeePosition
+    {
+        public int Id { get; set; }
 
-    public string? Position { get; set; }
+        [Required]
+        [MaxLength(100)]
+        public string? Position { get; set; }
 
-    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+        public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+    }
 }
