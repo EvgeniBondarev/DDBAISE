@@ -1,0 +1,176 @@
+﻿@using PostCity.ViewModels
+@using PostCity.ViewModels.Sort
+
+@model SubscriptionIndexViewModel
+
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<script>
+    function clearForm() {
+        document.getElementById("durationFilter").value = "";
+        document.getElementById("startDateFilter").value = "";
+        document.getElementById("officeNameFilter").value = "";
+        document.getElementById("publicationNameFilter").value = "";
+        document.getElementById("recipientEmailFilter").value = "";
+        document.getElementById("employeeNameFilter").value = "";
+    }
+</script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Filters
+                </div>
+               <div class="card-body">
+                    <form asp-action="Index" method="post">
+                        <div class="mb-2">
+                            <label for="durationFilter" class="form-label">Duration:</label>
+                            <input asp-for="@Model.SubscriptionFilter.Duration" id="durationFilter" name="Duration" class="form-control form-control-sm" type="number" min="0" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="startDateFilter" class="form-label">Start Date:</label>
+                            <input asp-for="@Model.SubscriptionFilter.StartDate" id="startDateFilter" name="StartDate" class="form-control form-control-sm" type="date" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="officeNameFilter" class="form-label">OfficeName Name:</label>
+                            <input asp-for="@Model.SubscriptionFilter.OfficeName" id="officeNameFilter" name="OfficeName" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="publicationNameFilter" class="form-label">Publication Name:</label>
+                            <input asp-for="@Model.SubscriptionFilter.PublicationName" id="publicationNameFilter" name="PublicationName" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="recipientEmailFilter" class="form-label">Recipient Email:</label>
+                            <input asp-for="@Model.SubscriptionFilter.RecipientEmail" id="recipientEmailFilter" name="RecipientEmail" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="employeeNameFilter" class="form-label">Employee Name:</label>
+                            <input asp-for="@Model.SubscriptionFilter.EmployeeName" id="employeeNameFilter" name="EmployeeName" class="form-control form-control-sm" /><br />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button><br />
+                        <a href="#" onclick="clearForm()">Clear Fields</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index"  asp-route-sortOrder="@ViewBag.DurationSort">
+                        @if (ViewBag.DurationSort == SubscriptionSortState.DurationDesc)
+                        {
+                                    <p>Duration ↑</p>
+                        }
+                        else{
+                                    <p>Duration ↓</p>
+                        }
+                
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index"  asp-route-sortOrder="@ViewBag.DateSort">
+                        @if (ViewBag.DateSort == SubscriptionSortState.DateAsc)
+                        {
+                                    <p>Start Date ↑</p>
+                        }
+                        else{
+                                    <p>Start Date ↓</p>
+                        }
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index"  asp-route-sortOrder="@ViewBag.OfficeSort">
+                        @if (ViewBag.OfficeSort == SubscriptionSortState.OfficeNameAsc)
+                        {
+                                        <p>Office ↑</p>
+                        }
+                        else
+                        {
+                                        <p>Office ↓</p>
+                        }
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index"  asp-route-sortOrder="@ViewBag.PublicationSort">
+                        @if (ViewBag.PublicationSort == SubscriptionSortState.PublicationNameAsc)
+                        {
+                                        <p>Publication ↑</p>
+                        }
+                        else
+                        {
+                                        <p>Publication ↓</p>
+                        }
+                    </a>
+                </th>
+                <th>
+                    <p>Recipient</p>
+                </th>
+                <th>
+                    <p>Employee</p>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model.Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Duration) мес.
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubscriptionStartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Office.StreetName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publication.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Recipient.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employee.FullName)
+                </td>
+                <td>
+                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                             <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+    <p>
+        @if (Model.PageViewModel.HasPreviousPage)
+        {
+                                <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+                                    Назад
+                                </a>
+        }
+
+        @if (Model.PageViewModel.HasNextPage)
+        {
+                                <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+                                    Вперед
+                                </a>
+        }
+    </p>
+       </div>
+    </div>
+</div>
