@@ -1,7 +1,8 @@
 ﻿@using PostCity.ViewModels
 @using PostCity.ViewModels.Sort
+@using PostCity.ViewModels.Filters.FilterModel
 
-@model OfficeIndexViewModel
+@model PageViewModel<Office, OfficeFilterModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -36,27 +37,27 @@
                     <form asp-action="Index" method="post">
                         <div class="mb-2">
                             <label for="ownerNameFilter" class="form-label">Owner Name:</label>
-                            <input asp-for="@Model.OfficeFilter.OwnerName" id="ownerNameFilter" name="OwnerName" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.OwnerName" id="ownerNameFilter" name="OwnerName" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="ownerMiddlenameFilter" class="form-label">Owner Middlename:</label>
-                            <input asp-for="@Model.OfficeFilter.OwnerMiddlename" id="ownerMiddlenameFilter" name="OwnerMiddlename" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.OwnerMiddlename" id="ownerMiddlenameFilter" name="OwnerMiddlename" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="ownerSurnameFilter" class="form-label">Owner Surname:</label>
-                            <input asp-for="@Model.OfficeFilter.OwnerSurname" id="ownerSurnameFilter" name="OwnerSurname" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.OwnerSurname" id="ownerSurnameFilter" name="OwnerSurname" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="streetNameFilter" class="form-label">Street Name:</label>
-                            <input asp-for="@Model.OfficeFilter.StreetName" id="streetNameFilter" name="StreetName" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.StreetName" id="streetNameFilter" name="StreetName" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="mobilePhoneFilter" class="form-label">Mobile Phone:</label>
-                            <input asp-for="@Model.OfficeFilter.MobilePhone" id="mobilePhoneFilter" name="MobilePhone" class="form-control form-control-sm" pattern="^\+375\d{9}$" title="Enter a valid phone number in the format +375999999999" placeholder="+375000000000" /><br />
+                            <input asp-for="@Model.FilterModel.MobilePhone" id="mobilePhoneFilter" name="MobilePhone" class="form-control form-control-sm" pattern="^\+375\d{9}$" title="Enter a valid phone number in the format +375999999999" placeholder="+375000000000" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="emailFilter" class="form-label">Email:</label>
-                            <input asp-for="@Model.OfficeFilter.Email" id="emailFilter" name="Email" class="form-control form-control-sm" type="email" /><br />
+                            <input asp-for="@Model.FilterModel.Email" id="emailFilter" name="Email" class="form-control form-control-sm" type="email" /><br />
                         </div>
                         <button type="submit" class="btn btn-primary">Apply Filters</button><br />
                         <a href="#" onclick="clearForm()">Clear Fields</a>
@@ -127,7 +128,7 @@
                     </tr>
                 </thead>
                 <tbody>
-            @foreach (var item in Model.Model) {
+            @foreach (var item in Model.Items) {
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.OwnerName)
@@ -157,18 +158,18 @@
                 </tbody>
             </table>
             <p>
-                @if (Model.PageViewModel.HasPreviousPage)
+                @if (Model.HasPreviousPage)
                 {
                     <a asp-action="Index"
-                   asp-route-page="@(Model.PageViewModel.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+                   asp-route-page="@(Model.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
                         Назад
                     </a>
                 }
 
-                @if (Model.PageViewModel.HasNextPage)
+                @if (Model.HasNextPage)
                 {
                     <a asp-action="Index"
-                   asp-route-page="@(Model.PageViewModel.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+                   asp-route-page="@(Model.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
                         Вперед
                     </a>
                 }

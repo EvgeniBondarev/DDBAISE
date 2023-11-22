@@ -1,7 +1,8 @@
 ﻿@using PostCity.ViewModels
 @using PostCity.ViewModels.Sort
+@using PostCity.ViewModels.Filters.FilterModel
 
-@model EmployeeIndexViewModel
+@model PageViewModel<Employee, EmployeeFilterModel>
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -33,23 +34,23 @@
                     <form asp-action="Index" method="post">
                         <div class="mb-2">
                             <label for="nameFilter" class="form-label">Name:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Name" id="nameFilter" name="Name" class="form-control form-control-sm"/><br />
+                            <input asp-for="@Model.FilterModel.Name" id="nameFilter" name="Name" class="form-control form-control-sm"/><br />
                         </div>
                         <div class="mb-2">
                             <label for="middlenameFilter" class="form-label">Middlename:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Middlename" id="middlenameFilter" name="Middlename" class="form-control form-control-sm"/><br />
+                            <input asp-for="@Model.FilterModel.Middlename" id="middlenameFilter" name="Middlename" class="form-control form-control-sm"/><br />
                         </div>
                         <div class="mb-2">
                             <label for="surnameFilter" class="form-label">Surname:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Surname" id="surnameFilter" name="Surname" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.Surname" id="surnameFilter" name="Surname" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="officeFilter" class="form-label">Office:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Office" id="officeFilter" name="Office" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.Office" id="officeFilter" name="Office" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="positionFilter" class="form-label">Position:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Position" id="positionFilter" name="Position" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.Position" id="positionFilter" name="Position" class="form-control form-control-sm" /><br />
                         </div>
               
                         <button type="submit" class="btn btn-primary">Apply Filters</button><br />
@@ -128,7 +129,7 @@
                     </tr>
                 </thead>
                 <tbody>
-            @foreach (var item in Model.Model) {
+            @foreach (var item in Model.Items) {
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.Name)
@@ -155,18 +156,18 @@
                 </tbody>
             </table>
             <p>
-                @if (Model.PageViewModel.HasPreviousPage)
+                @if (Model.HasPreviousPage)
                 {
                     <a asp-action="Index"
-                   asp-route-page="@(Model.PageViewModel.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+                   asp-route-page="@(Model.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
                         Назад
                     </a>
                 }
 
-                @if (Model.PageViewModel.HasNextPage)
+                @if (Model.HasNextPage)
                 {
                     <a asp-action="Index"
-                   asp-route-page="@(Model.PageViewModel.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+                   asp-route-page="@(Model.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
                         Вперед
                     </a>
                 }

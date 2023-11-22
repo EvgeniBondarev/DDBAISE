@@ -52,15 +52,10 @@ namespace PostCity.Controllers
 
             int pageSize = 15;
             _cache.Set(postCityContext);
-            var count = postCityContext.Count();
-            var items = postCityContext.Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            OfficeIndexViewModel viewModel = new OfficeIndexViewModel(items, pageViewModel)
-            {
-                OfficeFilter = filterData
-            };
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Office, OfficeFilterModel>(postCityContext, page, pageSize, filterData);
+
+            return View(pageViewModel);
         }
         [HttpPost]
         public async Task<IActionResult> Index(OfficeFilterModel filterData, int page = 1)
@@ -82,13 +77,8 @@ namespace PostCity.Controllers
             var count = data.Count();
             var items = data.Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            OfficeIndexViewModel viewModel = new OfficeIndexViewModel(items, pageViewModel)
-            {
-                OfficeFilter = filterData
-            };
-
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Office, OfficeFilterModel>(data, page, pageSize, filterData);
+            return View(pageViewModel);
         }
 
         // GET: Offices/Details/5

@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Laba4.ViewModels.Filters.FilterModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace PostCity.ViewModels.Filters.FilterModel
 {
-    public class OfficeFilterModel
+    public class OfficeFilterModel : ITableFilterModel
     {
         public string OwnerName { get; set; }
         public string OwnerMiddlename { get; set; }

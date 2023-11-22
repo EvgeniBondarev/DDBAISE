@@ -52,15 +52,9 @@ namespace PostCity.Controllers
 
             int pageSize = 15;
             _cache.Set(postCityContext);
-            var count = postCityContext.Count();
-            var items = postCityContext.Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            SubscriptionIndexViewModel viewModel = new SubscriptionIndexViewModel(items, pageViewModel)
-            {
-                SubscriptionFilter = filterData
-            };
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Subscription, SubscriptionFilterModel>(postCityContext, page, pageSize, filterData);
+            return View(pageViewModel);
         }
         [HttpPost]
         public async Task<IActionResult> Index(SubscriptionFilterModel filterData, int page = 1)
@@ -74,21 +68,13 @@ namespace PostCity.Controllers
             data = _filter.FilterByDate(data, sb => sb.SubscriptionStartDate, filterData.StartDate);
             data = _filter.FilterByString(data, pn => pn.Office.StreetName, filterData.OfficeName);
             data = _filter.FilterByString(data, pn => pn.Publication.Name, filterData.PublicationName);
-            data = _filter.FilterByString(data, pn => pn.Recipient.Email, filterData.RecipientEmail);
             data = _filter.FilterByString(data, pn => pn.Employee.Name, filterData.EmployeeName);
 
             int pageSize = 15;
             _cache.Set(data);
-            var count = data.Count();
-            var items = data.Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            SubscriptionIndexViewModel viewModel = new SubscriptionIndexViewModel(items, pageViewModel)
-            {
-                SubscriptionFilter = filterData
-            };
-
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Subscription, SubscriptionFilterModel>(data, page, pageSize, filterData);
+            return View(pageViewModel);
         }
         // GET: Subscriptions/Details/5
         public async Task<IActionResult> Details(int? id)

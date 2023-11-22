@@ -248,7 +248,6 @@ namespace Laba4.Data
                         Surname = lastNames[_random.Next(lastNames.Length)],
                         Address = randomAddress,
                         MobilePhone = $"+375{_random.Next(100000000, 999999999)}",
-                        Email = $"{Guid.NewGuid().ToString().Substring(0, 10)}@gmail.com"
                     });
                 }
 

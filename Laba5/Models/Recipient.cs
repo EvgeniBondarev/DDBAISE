@@ -26,11 +26,6 @@ namespace PostCity.Models
         [Phone] 
         public string MobilePhone { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        [EmailAddress]
-        public string Email { get; set; }
-
         [ForeignKey("AddressId")]
         public virtual RecipientAddress Address { get; set; }
 

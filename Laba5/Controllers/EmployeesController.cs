@@ -41,10 +41,7 @@ namespace PostCity.Controllers
         // GET: Employees
         public async Task<IActionResult> Index(EmployeeSortState sortOrder = EmployeeSortState.StandardState, int page = 1)
         {
-            var postCityContext = _context.Employees
-                                .Include(e => e.Position)
-                                .Include(e => e.Office)
-                                .ToList();
+            var postCityContext = _cache.Get();
 
             EmployeeFilterModel filterData = _cookies.GetFromCookies<EmployeeFilterModel>(Request.Cookies, "EmployeeFilterData");
 
@@ -52,16 +49,9 @@ namespace PostCity.Controllers
             postCityContext = ApplySortOrder(postCityContext, sortOrder).ToList();
 
             int pageSize = 15;
-            _cache.Set(postCityContext);
-            var count = postCityContext.Count();
-            var items = postCityContext.Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            EmployeeIndexViewModel viewModel = new EmployeeIndexViewModel(items, pageViewModel)
-            {
-                EmployeeFilterModel = filterData
-            };
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Employee, EmployeeFilterModel>(postCityContext, page, pageSize, filterData);
+            return View(pageViewModel);
         }
 
         [HttpPost]
@@ -70,9 +60,7 @@ namespace PostCity.Controllers
             _cache.Update();
             _cookies.SaveToCookies(Response.Cookies, "EmployeeFilterData", filterData);
 
-            var data = _context.Employees
-                                .Include(e => e.Position)
-                                .Include(e => e.Office).AsEnumerable();
+            var data = _cache.Get();
 
 
             data = _filter.FilterByString(data, pn => pn.Name, filterData.Name);
@@ -86,13 +74,8 @@ namespace PostCity.Controllers
             var count = data.Count();
             var items = data.Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            EmployeeIndexViewModel viewModel = new EmployeeIndexViewModel(items, pageViewModel)
-            {
-                EmployeeFilterModel = filterData
-            };
-
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Employee, EmployeeFilterModel>(data, page, pageSize, filterData);
+            return View(pageViewModel);
         }
         // GET: Employees/Details/5
         public async Task<IActionResult> Details(int? id)
