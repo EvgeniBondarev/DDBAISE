@@ -17,6 +17,8 @@ using PostCity.Data.Cookies;
 using PostCity.Infrastructure.Filters;
 using PostCity.ViewModels.Filters;
 using Laba4.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace PostCity.Controllers
 {
@@ -118,6 +120,7 @@ namespace PostCity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,OwnerName,OwnerMiddlename,OwnerSurname,StreetName,MobilePhone,Email")] Office office)
         {
             if (ModelState.IsValid)
@@ -131,6 +134,7 @@ namespace PostCity.Controllers
         }
 
         // GET: Offices/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Offices == null)
@@ -151,6 +155,7 @@ namespace PostCity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OwnerName,OwnerMiddlename,OwnerSurname,StreetName,MobilePhone,Email")] Office office)
         {
             if (id != office.Id)
@@ -183,6 +188,7 @@ namespace PostCity.Controllers
         }
 
         // GET: Offices/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Offices == null)

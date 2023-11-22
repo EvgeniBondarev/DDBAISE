@@ -15,6 +15,8 @@ using PostCity.Infrastructure.Filters;
 using Newtonsoft.Json;
 using PostCity.Data.Cookies;
 using Laba4.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace PostCity.Controllers
 {
@@ -138,6 +140,7 @@ namespace PostCity.Controllers
         }
 
         // GET: Subscriptions/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Subscriptions == null)
@@ -163,6 +166,7 @@ namespace PostCity.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ServiceFilter(typeof(DatabaseSaveFilter))]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,RecipientId,PublicationId,Duration,OfficeId,EmployeeId,SubscriptionStartDate")] Subscription subscription)
         {
             if (id != subscription.Id)
@@ -199,6 +203,7 @@ namespace PostCity.Controllers
         }
 
         // GET: Subscriptions/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Subscriptions == null)
