@@ -6,7 +6,7 @@ namespace PostCity.Data.Cache
 {
     public class OfficeCache : AppCache<Office>
     {
-        public OfficeCache(SubsCityContext db, IMemoryCache memoryCache) : base(db, memoryCache)
+        public OfficeCache(PostCityContext db, IMemoryCache memoryCache) : base(db, memoryCache)
         {
         }
 

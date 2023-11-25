@@ -32,10 +32,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Offices" asp-action="Index">Offices</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Roles</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Recipients" asp-action="Index">Recipients</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="UserList">Users</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a>
                         </li>
                     </ul>
                 </div>
@@ -45,8 +45,8 @@
         
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+        <main role="main" class="p-0 m-0" >
+                @RenderBody()
         </main>
     </div>
 

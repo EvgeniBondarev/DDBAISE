@@ -12,14 +12,12 @@ namespace Laba4.Middleware
                 _next = next;
             }
 
-            public Task Invoke(HttpContext httpContext, SubsCityContext db, UserInitializer userInitializer)
+            public Task Invoke(HttpContext httpContext, PostCityContext db, UserInitializer userInitializer)
             {
                 if (!(httpContext.Session.Keys.Contains("starting")))
                 {
                     DbInitializer dbInitializer = new DbInitializer(db);
                     dbInitializer.InitializeDb();
-
-                    userInitializer.Initialize();
 
                     httpContext.Session.SetString("starting", "Yes");
                 }

@@ -16,5 +16,10 @@ namespace PostCity.Models
         public int Apartment { get; set; }
 
         public virtual ICollection<Recipient> Recipients { get; set; } = new List<Recipient>();
+
+        public string FulAddress
+        {
+            get { return $"{Street} д.{House} кв.{Apartment}"; }
+        }
     }
 }

@@ -7,12 +7,12 @@ namespace PostCity.Data.Cache
     public abstract class AppCache<T>
     {
         protected readonly IMemoryCache _cache;
-        protected readonly SubsCityContext _db;
+        protected readonly PostCityContext _db;
 
         internal readonly int _saveTime = 2 * 2 * 240;
 
 
-        public AppCache(SubsCityContext db, IMemoryCache memoryCache)
+        public AppCache(PostCityContext db, IMemoryCache memoryCache)
         {
             _db = db;
             _cache = memoryCache;

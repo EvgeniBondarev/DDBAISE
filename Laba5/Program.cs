@@ -7,20 +7,26 @@ using Laba4.Data;
 using PostCity.Data.Cache;
 using PostCity.Data.Cookies;
 using PostCity.Infrastructure.Filters;
+using Laba4.Data.Cache;
+using Laba4.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 
 string connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
 
-builder.Services.AddDbContext<SubsCityContext>(options =>
+builder.Services.AddDbContext<PostCityContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services
-    .AddDefaultIdentity<IdentityUser>()
+    .AddDefaultIdentity<PostCityUser>()
     .AddDefaultTokenProviders()
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<SubsCityContext>();
+    .AddEntityFrameworkStores<PostCityContext>();
+
+services.AddTransient<UserRegistrationManager>();
+
+
 
 services.AddMemoryCache();
 services.AddDistributedMemoryCache();
@@ -30,9 +36,11 @@ services.AddTransient(typeof(FilterBy<>));
 services.AddTransient<CookiesManeger>();
 services.AddTransient(typeof(DatabaseSaveFilter));
 
+
 services.AddTransient<SubscriptionCache>();
 services.AddTransient<EmployeeCache>();
 services.AddTransient<OfficeCache>();
+services.AddTransient<RecipientCache>();
 
 services.AddTransient<UserInitializer>();
 
@@ -44,7 +52,8 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
-app.UseDbInitializerMiddleware();
+//app.UseDbInitializerMiddleware();
+app.UseUserDbInitializerMiddleware();
 app.UseStaticFiles();
 app.UseRouting();
 

@@ -8,7 +8,7 @@ namespace PostCity.Data.Cache
 {
     public class EmployeeCache : AppCache<Employee>
     {
-        public EmployeeCache(SubsCityContext db, IMemoryCache memoryCache) : base(db, memoryCache)
+        public EmployeeCache(PostCityContext db, IMemoryCache memoryCache) : base(db, memoryCache)
         {
         }
 

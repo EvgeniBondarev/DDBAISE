@@ -23,12 +23,12 @@ namespace PostCity.Controllers
 
     public class SubscriptionsController : Controller
     {
-        private readonly SubsCityContext _context;
+        private readonly PostCityContext _context;
         private readonly SubscriptionCache _cache;
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Subscription> _filter;
 
-        public SubscriptionsController(SubsCityContext context,
+        public SubscriptionsController(PostCityContext context,
                                        SubscriptionCache cache,
                                        CookiesManeger cookiesManeger,
                                        FilterBy<Subscription> filter)

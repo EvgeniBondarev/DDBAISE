@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Laba4.Migrations
 {
-    [DbContext(typeof(SubsCityContext))]
+    [DbContext(typeof(PostCityContext))]
     [Migration("20231122183830_DelRecipientEmail")]
     partial class DelRecipientEmail
     {

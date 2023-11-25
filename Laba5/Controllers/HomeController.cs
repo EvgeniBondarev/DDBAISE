@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Newtonsoft.Json;
 using PostCity.Data.Cache;
 using PostCity.Models;
 using System.Diagnostics;
@@ -18,6 +19,19 @@ namespace Laba4.Controllers
 
         public IActionResult Index()
         {
+            string result = "";
+            if (Request.Cookies.TryGetValue("UserCredentials", out string credentialsJson))
+            {
+                var credentials = JsonConvert.DeserializeAnonymousType(credentialsJson, new { Email = "", Password = "" });
+
+                result = $"Email: {credentials.Email},\nPassword: {credentials.Password}";
+            }
+            else
+            {
+                result = "Cookie с именем 'UserCredentials' не найдена.";
+            }
+            ViewBag.Result = result;
+
             return View();
         }
 

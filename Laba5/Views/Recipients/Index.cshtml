@@ -1,0 +1,169 @@
+﻿@using Laba4.ViewModels.Filters.FilterModel
+@using Laba4.ViewModels.Sort
+@using PostCity.ViewModels
+@using PostCity.ViewModels.Filters
+@using PostCity.ViewModels.Sort
+
+@model PageViewModel<Recipient, RecipientFilterModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<script>
+    function clearForm() {
+        document.getElementById("nameFilter").value = "";
+        document.getElementById("middlenameFilter").value = "";
+        document.getElementById("surnameFilter").value = "";
+        document.getElementById("mobilePhoneFilter").value = "";
+        document.getElementById("addressFilter").value = "";
+    }
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Filters
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="post">
+                        <div class="mb-2">
+                            <label for="ownerNameFilter" class="form-label">Name:</label>
+                            <input asp-for="@Model.FilterModel.Name" id="nameFilter" name="Name" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="ownerMiddlenameFilter" class="form-label">Middlename:</label>
+                            <input asp-for="@Model.FilterModel.Middlename" id="middlenameFilter" name="Middlename" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="ownerSurnameFilter" class="form-label">Surname:</label>
+                            <input asp-for="@Model.FilterModel.Surname" id="surnameFilter" name="Surname" class="form-control form-control-sm" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="mobilePhoneFilter" class="form-label">Mobile Phone:</label>
+                            <input asp-for="@Model.FilterModel.MobilePhone" id="mobilePhoneFilter" name="MobilePhone" class="form-control form-control-sm" pattern="^\+375\d{9}$" title="Enter a valid phone number in the format +375999999999" placeholder="+375000000000" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="emailFilter" class="form-label">Address:</label>
+                            <input asp-for="@Model.FilterModel.Address" id="addressFilter" name="Address" class="form-control form-control-sm"/><br />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button><br />
+                        <a href="#" onclick="clearForm()">Clear Fields</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+
+        <table class="table">
+            <thead>
+                    <tr>
+                        <th>
+                            <a asp-action="Index"  asp-route-sortOrder="@ViewBag.NameSort">
+                            @if (ViewBag.NameSort == RecipientSortState.NameAsc)
+                            {
+                                                <p>Name ↑</p>
+                            }
+                            else
+                            {
+                                                <p>Name ↓</p>
+                            }
+
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"  asp-route-sortOrder="@ViewBag.MiddlenameSort">
+                            @if (ViewBag.MiddlenameSort == RecipientSortState.MiddlenameAsc)
+                            {
+                                                <p>Middlename ↑</p>
+                            }
+                            else
+                            {
+                                                <p>Middlename ↓</p>
+                            }
+                            </a>
+                        </th>
+                        <th>
+                            <a asp-action="Index"  asp-route-sortOrder="@ViewBag.SurnameSort">
+                            @if (ViewBag.SurnameSort == RecipientSortState.SurnameAsc)
+                            {
+                                                    <p>Surname ↑</p>
+                            }
+                            else
+                            {
+                                                    <p>Surname ↓</p>
+                            }
+                            </a>
+                        </th>
+                        <th><p>MobilePhone</p></th>
+                        <th>
+                            <a asp-action="Index"  asp-route-sortOrder="@ViewBag.AddressSort">
+                            @if (ViewBag.AddressSort == RecipientSortState.AddressAsc)
+                            {
+                                                    <p>Address ↑</p>
+                            }
+                            else
+                            {
+                                                    <p>Address ↓</p>
+                            }
+                            </a>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+            <tbody>
+        @foreach (var item in Model.Items) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Middlename)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Surname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MobilePhone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Address.FulAddress)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+        }
+            </tbody>
+        </table>
+        <p>
+                        @if (Model.HasPreviousPage)
+                        {
+                            <a asp-action="Index"
+                           asp-route-page="@(Model.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+                                Назад
+                            </a>
+                        }
+
+                        @if (Model.HasNextPage)
+                        {
+                            <a asp-action="Index"
+                           asp-route-page="@(Model.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+                                Вперед
+                            </a>
+                        }
+        </p>
+        </div>
+    </div>
+</div>

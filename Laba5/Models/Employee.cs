@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Laba4.Models;
 
 namespace PostCity.Models
 {
-    public class Employee
+    public class Employee : IUser
     {
         public int Id { get; set; }
 

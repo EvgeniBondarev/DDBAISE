@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Laba4.Data;
 using Laba4.Models;
+using Laba4.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PostCity.Data;
 using PostCity.Data.Cache;
 using PostCity.Data.Cookies;
@@ -22,20 +25,23 @@ namespace PostCity.Controllers
 {
     public class EmployeesController : Controller
     {
-        private readonly SubsCityContext _context;
+        private readonly PostCityContext _context;
         private readonly EmployeeCache _cache;
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Employee> _filter;
+        private readonly UserRegistrationManager _userRegistrationManager;
 
-        public EmployeesController(SubsCityContext context,
+        public EmployeesController(PostCityContext context,
                                    EmployeeCache employeeCache,
                                    CookiesManeger cookiesManeger,
-                                   FilterBy<Employee> filter)
+                                   FilterBy<Employee> filter,
+                                   UserRegistrationManager userRegistrationManager)
         {
             _context = context;
             _cache = employeeCache;
             _cookies = cookiesManeger;
             _filter = filter;
+            _userRegistrationManager = userRegistrationManager;
         }
 
         // GET: Employees
@@ -98,7 +104,7 @@ namespace PostCity.Controllers
         }
 
         // GET: Employees/Create
-        [Authorize(Roles = "Admin")]
+       [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName");
@@ -115,13 +121,54 @@ namespace PostCity.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
-                _cache.Update();
-                return RedirectToAction(nameof(Index));
+                if (Request.Cookies.TryGetValue("EmployeeCredentials", out string credentialsJson))
+                {
+                    var credentials = JsonConvert.DeserializeAnonymousType(credentialsJson, new { Email = "", Password = "" });
+
+                    using var transaction = await _context.Database.BeginTransactionAsync();
+
+                    try
+                    {
+
+                        _context.Add(employee);
+                        await _context.SaveChangesAsync();
+
+                        var result = await _userRegistrationManager.RegisterUserWithRole(new PostCityUserModel()
+                        {
+                            Role = "Employee",
+                            Email = credentials.Email,
+                            Password = credentials.Password,
+                            UserId = employee.Id
+                        });
+
+                        if (result.Succeeded)
+                        {
+                            transaction.Commit();
+                            _cache.Update();
+                            return Redirect("/Role/UserList");
+
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            _context.Employees.Remove(employee);
+
+                            foreach (var error in result.Errors)
+                            {
+                                ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName");
+                                ViewData["PositionId"] = new SelectList(_context.EmployeePositions, "Id", "Position");
+                                return View(employee);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                    }
+                }
             }
-            ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", employee.OfficeId);
-            ViewData["PositionId"] = new SelectList(_context.EmployeePositions, "Id", "Position", employee.PositionId);
+            ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName");
+            ViewData["PositionId"] = new SelectList(_context.EmployeePositions, "Id", "Position");
             return View(employee);
         }
 

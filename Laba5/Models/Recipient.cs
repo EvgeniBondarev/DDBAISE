@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Laba4.Models;
 
 namespace PostCity.Models
 {
-    public class Recipient
+    public class Recipient : IUser
     {
         public int Id { get; set; }
 
@@ -27,7 +28,7 @@ namespace PostCity.Models
         public string MobilePhone { get; set; }
 
         [ForeignKey("AddressId")]
-        public virtual RecipientAddress Address { get; set; }
+        public virtual RecipientAddress? Address { get; set; }
 
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
@@ -39,5 +40,6 @@ namespace PostCity.Models
         {
             get { return $"{Surname} {Name} {Middlename}"; }
         }
+
     }
 }

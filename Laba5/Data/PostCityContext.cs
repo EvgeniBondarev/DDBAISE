@@ -6,13 +6,13 @@ using PostCity.Models;
 
 namespace Laba4.Models;
 
-public partial class SubsCityContext : IdentityDbContext
+public partial class PostCityContext : IdentityDbContext
 {
-    public SubsCityContext()
+    public PostCityContext()
     {
     }
 
-    public SubsCityContext(DbContextOptions<SubsCityContext> options)
+    public PostCityContext(DbContextOptions<PostCityContext> options)
         : base(options)
     {
     }
@@ -31,4 +31,6 @@ public partial class SubsCityContext : IdentityDbContext
     public virtual DbSet<RecipientAddress> RecipientAddresses { get; set; }
 
     public virtual DbSet<Subscription> Subscriptions { get; set; }
+    
+    public virtual DbSet<PostCityUser> PostCityUsers { get; set; }
 }

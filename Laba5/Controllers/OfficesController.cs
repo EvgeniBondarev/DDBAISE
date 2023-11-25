@@ -24,12 +24,12 @@ namespace PostCity.Controllers
 {
     public class OfficesController : Controller
     {
-        private readonly SubsCityContext _context;
+        private readonly PostCityContext _context;
         private readonly OfficeCache _cache;
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Office> _filter;
 
-        public OfficesController(SubsCityContext context,
+        public OfficesController(PostCityContext context,
                                  OfficeCache officeCache,
                                  CookiesManeger cookiesManeger,
                                  FilterBy<Office> filterBy)

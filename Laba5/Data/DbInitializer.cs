@@ -6,11 +6,11 @@ namespace Laba4.Data
 {
     public class DbInitializer
     {
-        private readonly SubsCityContext _context;
+        private readonly PostCityContext _context;
         private readonly Random _random;
 
 
-        public DbInitializer(SubsCityContext context)
+        public DbInitializer(PostCityContext context)
         {
             _context = context;
             _random = new Random();

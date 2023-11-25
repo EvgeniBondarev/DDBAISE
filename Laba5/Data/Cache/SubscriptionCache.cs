@@ -8,7 +8,7 @@ namespace PostCity.Data.Cache
 {
     public class SubscriptionCache : AppCache<Subscription>
     {
-        public SubscriptionCache(SubsCityContext db, IMemoryCache memoryCache) : base(db, memoryCache)
+        public SubscriptionCache(PostCityContext db, IMemoryCache memoryCache) : base(db, memoryCache)
         {
         }
 
