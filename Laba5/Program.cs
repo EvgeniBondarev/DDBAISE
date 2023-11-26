@@ -41,6 +41,7 @@ services.AddTransient<SubscriptionCache>();
 services.AddTransient<EmployeeCache>();
 services.AddTransient<OfficeCache>();
 services.AddTransient<RecipientCache>();
+services.AddTransient<UserCache>();
 
 services.AddTransient<UserInitializer>();
 

@@ -1,60 +1,145 @@
 ﻿@using Laba4.Models
 @using Laba4.ViewModels
+@using Laba4.ViewModels.Filters.FilterModel
+@using Laba4.ViewModels.Sort
 @using Microsoft.AspNetCore.Identity
+@using PostCity.ViewModels
+@using PostCity.ViewModels.Sort
 
-@model IEnumerable<UserViewModel>
+
+@model PageViewModel<UserViewModel, UserFilterModel>
 
 <h2>Users List</h2>
 <a asp-action="Roles">Roles</a>
-<table class="table">
-    @foreach (var user in Model)
-    {
-                <tr>
-                    <td>@user.Email</td>
-                    <td>@if(user.UserObj != null){
-                           <p>@user.UserObj.FullName</p> 
-                        }
-                    </td>
-                    <td>@user.Role</td>
-                    <td>@{
-                            if (@user.Role == "Recipient")
-                            {
-                                               <a asp-controller="Recipients" asp-action="Edit" asp-route-id="@user.UserObj.Id">Edit</a>
-                                   
-                            }
-                            else if (@user.Role == "Employee")
-                            {
-                                               <a asp-controller="Employees" asp-action="Edit" asp-route-id="@user.UserObj.Id">Edit</a>
-
-                            }
-                        }
-                    <td>@{
-                            if (@user.Role == "Recipient")
-                            {
-                                               <a asp-controller="Recipients" asp-action="Details" asp-route-id="@user.UserObj.Id">Details</a>
-                                   
-                            }
-                            else if (@user.Role == "Employee")
-                            {
-                                               <a asp-controller="Employees" asp-action="Details" asp-route-id="@user.UserObj.Id">Details</a>  
-                            }
-                        }
-                    </td>
-                    <td>
-                    @{
-                        if (user.Role != "Admin")
-                        {
-                                                <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post">
-                                                    <button type="submit" class="btn btn-link">
-                                                        Delete
-                                                    </button>
-                                                </form>
-
-                        }
-                    }
-                    </td>
-                        
-                </tr>
+<script>
+    function clearForm() {
+        document.getElementById("nameFilter").value = "";
+        document.getElementById("emailFilter").value = "";
+        document.getElementById("roleFilter").value = "";
     }
-</table>
+</script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Filters
+                </div>
+               <div class="card-body">
+                    <form asp-action="Index" method="post">
+                        <div class="mb-2">
+                            <label for="emailFilter" class="form-label">Email:</label>
+                            <input asp-for="@Model.FilterModel.Email" id="emailFilter" name="Email" class="form-control form-control-sm"/><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="nameFilter" class="form-label">Name:</label>
+                            <input asp-for="@Model.FilterModel.Name" id="nameFilter" name="Name" class="form-control form-control-sm" min="0" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="roleFilter" class="form-label">Role:</label>
+                            <input asp-for="@Model.FilterModel.Role" id="roleFilter" name="Role" class="form-control form-control-sm" /><br />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button><br />
+                        <a href="#" onclick="clearForm()">Clear Fields</a>
+                    </form>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-md-10">
+        <table class="table">
+            <thead>
+            <tr>
+                
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>
+                    <a asp-action="Index"  asp-route-sortOrder="@ViewBag.RoleSort">
+                                @if (ViewBag.RoleSort == UserSortState.RoleAsc)
+                                {
+                                            <p>Role ↑</p>
+                                }
+                                else
+                                {
+                                            <p>Role ↓</p>
+                                }
+                    </a>
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model.Items)
+        {
+                    <tr>
+                        <td>@user.Email</td>
+                        <td>@if(user.UserObj != null){
+                               <p>@user.UserObj.FullName</p> 
+                            }
+                        </td>
+                        <td>@user.Role</td>
+                        <td>@{
+                                if (@user.Role == "Recipient")
+                                {
+                                                   <a asp-controller="Recipients" asp-action="Edit" asp-route-id="@user.UserObj.Id">Edit</a>
+                                   
+                                }
+                                else if (@user.Role == "Employee")
+                                {
+                                                   <a asp-controller="Employees" asp-action="Edit" asp-route-id="@user.UserObj.Id">Edit</a>
+
+                                }
+                            }
+                        <td>@{
+                                if (@user.Role == "Recipient")
+                                {
+                                                   <a asp-controller="Recipients" asp-action="Details" asp-route-id="@user.UserObj.Id">Details</a>
+                                   
+                                }
+                                else if (@user.Role == "Employee")
+                                {
+                                                   <a asp-controller="Employees" asp-action="Details" asp-route-id="@user.UserObj.Id">Details</a>  
+                                }
+                            }
+                        </td>
+                        <td>
+                        @{
+                            if (user.Role != "Admin")
+                            {
+                                                    <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post">
+                                                        <button type="submit" class="btn btn-link">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+
+                            }
+                        }
+                        </td>
+                        
+                    </tr>
+        }
+        </tbody>
+    </table>
+    <p>
+        @if (Model.HasPreviousPage)
+        {
+                                        <a asp-action="Index"
+                       asp-route-page="@(Model.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
+                                            Назад
+                                        </a>
+        }
+
+        @if (Model.HasNextPage)
+        {
+                                        <a asp-action="Index"
+                       asp-route-page="@(Model.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
+                                            Вперед
+                                        </a>
+        }
+        </p>
+
+      </div>
+    </div>
+</div>
