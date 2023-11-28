@@ -20,7 +20,7 @@ namespace PostCity.Models
         [MaxLength(50)] 
         public string Surname { get; set; }
 
-        public int AddressId { get; set; }
+        public int? AddressId { get; set; }
 
         [Required]
         [MaxLength(15)] 

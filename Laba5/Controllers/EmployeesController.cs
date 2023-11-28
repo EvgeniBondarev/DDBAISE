@@ -4,9 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Laba4.Data;
+using Laba4.Data.Cache;
 using Laba4.Models;
 using Laba4.Models.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -30,18 +32,24 @@ namespace PostCity.Controllers
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Employee> _filter;
         private readonly UserRegistrationManager _userRegistrationManager;
+        private readonly UserManager<PostCityUser> _userManager;
+        private readonly UserCache _userCache;
 
         public EmployeesController(PostCityContext context,
                                    EmployeeCache employeeCache,
                                    CookiesManeger cookiesManeger,
                                    FilterBy<Employee> filter,
-                                   UserRegistrationManager userRegistrationManager)
+                                   UserRegistrationManager userRegistrationManager,
+                                   UserManager<PostCityUser> userManager,
+                                   UserCache userCache)
         {
             _context = context;
             _cache = employeeCache;
             _cookies = cookiesManeger;
             _filter = filter;
             _userRegistrationManager = userRegistrationManager;
+            _userManager = userManager;
+            _userCache = userCache;
         }
 
         // GET: Employees
@@ -145,6 +153,7 @@ namespace PostCity.Controllers
                         {
                             transaction.Commit();
                             _cache.Update();
+                            _userCache.Update();
                             return Redirect("/Role/UserList");
 
                         }
@@ -211,6 +220,7 @@ namespace PostCity.Controllers
                     _context.Update(employee);
                     await _context.SaveChangesAsync();
                     _cache.Update();
+                    _userCache.Update();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -265,8 +275,15 @@ namespace PostCity.Controllers
             {
                 _context.Employees.Remove(employee);
             }
-            
-            await _context.SaveChangesAsync();
+
+            int isDelete = await _context.SaveChangesAsync();
+            if (isDelete == 1)
+            {
+                PostCityUser user = _context.FindUserByUserId(employee.Id);
+                IdentityResult result = await _userManager.DeleteAsync(user);
+            }
+            _cache.Update();
+            _userCache.Update();
             return RedirectToAction(nameof(Index));
         }
 

@@ -6,7 +6,7 @@ using PostCity.Models;
 
 namespace Laba4.Models;
 
-public partial class PostCityContext : IdentityDbContext
+public partial class PostCityContext : IdentityDbContext<PostCityUser>
 {
     public PostCityContext()
     {
@@ -33,4 +33,9 @@ public partial class PostCityContext : IdentityDbContext
     public virtual DbSet<Subscription> Subscriptions { get; set; }
     
     public virtual DbSet<PostCityUser> PostCityUsers { get; set; }
+
+    public PostCityUser FindUserByUserId(int userId)
+    {
+        return Users.FirstOrDefault(u => u.UserId == userId);
+    }
 }

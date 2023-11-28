@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PostCity.Models;
 
 namespace Laba4.Areas.Identity.Pages.Account
 {
@@ -129,7 +130,7 @@ namespace Laba4.Areas.Identity.Pages.Account
                     return Page();
                 }
 
-                var credentials = new { Email = Input.Email, Password = Input.Password };
+                var credentials = new { Email = Input.Email, Password = Input.Password, Address = new RecipientAddress()};
                 var credentialsJson = JsonConvert.SerializeObject(credentials);
 
                 Response.Cookies.Append("UserCredentials", credentialsJson);

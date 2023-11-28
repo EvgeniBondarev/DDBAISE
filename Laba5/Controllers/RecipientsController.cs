@@ -21,6 +21,7 @@ using PostCity.ViewModels.Filters;
 using Newtonsoft.Json;
 using Laba4.Data;
 using Laba4.Models.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace Laba4.Controllers
 {
@@ -31,18 +32,24 @@ namespace Laba4.Controllers
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Recipient> _filter;
         private readonly UserRegistrationManager _userRegistrationManager;
+        private readonly UserManager<PostCityUser> _userManager;
+        private readonly UserCache _userCache;
 
         public RecipientsController(PostCityContext context, 
                                     RecipientCache recipientCache,
                                     CookiesManeger cookiesManeger,
                                     FilterBy<Recipient> filterBy,
-                                    UserRegistrationManager userRegistrationManager)
+                                    UserRegistrationManager userRegistrationManager,
+                                    UserManager<PostCityUser> userManager,
+                                    UserCache userCache)
         {
             _context = context;
             _cache = recipientCache;
             _cookies = cookiesManeger;
             _filter = filterBy;
             _userRegistrationManager = userRegistrationManager;
+            _userManager = userManager;
+            _userCache = userCache;
         }
 
         // GET: Recipients
@@ -101,88 +108,116 @@ namespace Laba4.Controllers
             return View(recipient);
         }
 
-        // GET: Recipients/Create
-        public IActionResult Create()
+        public IActionResult Register()
         {
-            ViewData["AddressId"] = new SelectList(_context.RecipientAddresses, "Id", "FulAddress");
+            if (Request.Cookies.TryGetValue("RecipientFields", out string recipientFieldsJson))
+            {
+                var recipientFields = JsonConvert.DeserializeAnonymousType(recipientFieldsJson, new
+                {
+                    Name = "",
+                    Middlename = "",
+                    Surname = "",
+                    MobilePhone = ""
+                });
+
+                ViewData["Name"] = recipientFields.Name;
+                ViewData["Middlename"] = recipientFields.Middlename;
+                ViewData["Surname"] = recipientFields.Surname;
+                ViewData["MobilePhone"] = recipientFields.MobilePhone;
+            }
+
             return View();
         }
-
-        // POST: Recipients/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Middlename,Surname,AddressId,MobilePhone")] Recipient recipient)
+        public async Task<IActionResult> SaveFields([Bind("Id,Name,Middlename,Surname, MobilePhone")] Recipient recipient)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(recipient);
-                await _context.SaveChangesAsync();
-                _cache.Update();
-                return RedirectToAction(nameof(Index));
+                var credentials = new { Name=recipient.Name, 
+                                        Middlename=recipient.Middlename, 
+                                        Surname=recipient.Surname,
+                                        MobilePhone = recipient.MobilePhone,
+                                       };
+                var credentialsJson = JsonConvert.SerializeObject(credentials);
+                Response.Cookies.Append("RecipientFields", credentialsJson);
+
+                return RedirectToAction("Create", "RecipientAddresses");
             }
             ViewData["AddressId"] = new SelectList(_context.RecipientAddresses, "Id", "FulAddress", recipient.AddressId);
             return View(recipient);
         }
-
-        public IActionResult Register()
-        {
-            ViewData["AddressId"] = new SelectList(_context.RecipientAddresses, "Id", "FulAddress");
-            return View();
-        }
-
-        // POST: Recipients/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("Id,Name,Middlename,Surname,AddressId,MobilePhone")] Recipient recipient)
+        public async Task<IActionResult> Register([Bind("Id,Name,Middlename,Surname, MobilePhone")] Recipient recipient)
         {
             if (ModelState.IsValid)
             {
                 if (Request.Cookies.TryGetValue("UserCredentials", out string credentialsJson))
                 {
-                    var credentials = JsonConvert.DeserializeAnonymousType(credentialsJson, new { Email = "", Password = "" });
+                    var credentials = JsonConvert.DeserializeAnonymousType(credentialsJson, new { Email = "", 
+                                                                                                  Password = "", 
+                                                                                                  Address = new RecipientAddress() });
 
                     using var transaction = await _context.Database.BeginTransactionAsync();
 
-                    try
+                    if(credentials.Address.Street != null)
                     {
-
-                        _context.Add(recipient);
-                        await _context.SaveChangesAsync();
-
-                        var result = await _userRegistrationManager.RegisterUserWithRole(new PostCityUserModel()
+                        try
                         {
-                            Role = "Recipient",
-                            Email = credentials.Email,
-                            Password = credentials.Password,
-                            UserId = recipient.Id
-                        });
+                            var newRecipient = new Recipient()
+                            {
+                                Name = recipient.Name,
+                                Middlename = recipient.Middlename,
+                                Surname = recipient.Surname,
+                                MobilePhone = recipient.MobilePhone,
+                                AddressId = credentials.Address.Id
+                            };
 
-                        if (result.Succeeded)
-                        {
-                            transaction.Commit();
-                            _cache.Update();
-                            return Redirect("/Identity/Account/Login");
+                            _context.Add(newRecipient);
+                            await _context.SaveChangesAsync();
 
+                            var result = await _userRegistrationManager.RegisterUserWithRole(new PostCityUserModel()
+                            {
+                                Role = "Recipient",
+                                Email = credentials.Email,
+                                Password = credentials.Password,
+                                UserId = newRecipient.Id
+                            });
+
+                            if (result.Succeeded)
+                            {
+                                transaction.Commit();
+                                _cache.Update();
+                                _userCache.Update();
+                                Response.Cookies.Delete("RecipientFields");
+                                return Redirect("/Identity/Account/Login");
+
+                            }
+                            else
+                            {
+                                transaction.Rollback();
+                                _context.Recipients.Remove(recipient);
+                                _context.RecipientAddresses.Remove(credentials.Address);
+
+                                foreach (var error in result.Errors)
+                                {
+                                    ViewData["AddressId"] = new SelectList(_context.RecipientAddresses, "Id", "FulAddress", recipient.AddressId);
+                                    return View(recipient);
+                                }
+                            }
                         }
-                        else
+                        catch (Exception)
                         {
                             transaction.Rollback();
                             _context.Recipients.Remove(recipient);
-
-                            foreach (var error in result.Errors)
-                            {
-                                ViewData["AddressId"] = new SelectList(_context.RecipientAddresses, "Id", "FulAddress", recipient.AddressId);
-                                return View(recipient);
-                            }
+                            _context.RecipientAddresses.Remove(credentials.Address);
                         }
                     }
-                    catch (Exception)
+                    else
                     {
-                        transaction.Rollback();
+                        ViewData["ErrorMessage"] = "Address is required. Please add an address before registering.";
+                        return View(recipient);
                     }
                 }
             }
@@ -228,6 +263,7 @@ namespace Laba4.Controllers
                     _context.Update(recipient);
                     await _context.SaveChangesAsync();
                     _cache.Update();
+                    _userCache.Update();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -281,8 +317,14 @@ namespace Laba4.Controllers
                 
             }
             
-            await _context.SaveChangesAsync();
+            int isDelete = await _context.SaveChangesAsync();
+            if (isDelete == 1)
+            {
+                PostCityUser user = _context.FindUserByUserId(recipient.Id);
+                IdentityResult result = await _userManager.DeleteAsync(user);
+            }
             _cache.Update();
+            _userCache.Update();
             return RedirectToAction(nameof(Index));
         }
 
