@@ -39,15 +39,21 @@
                 ? data.Where(item => propertySelector(item).Contains(filterValue ?? ""))
                 : data;
         }
-
-        public IEnumerable<T> FilterByNullableString(
-            IEnumerable<T> data,
-            Func<T, string?> propertySelector,
-            string filterValue)
+        public IEnumerable<T> FilterByDecimal(
+        IEnumerable<T> data,
+        Func<T, decimal> propertySelector,
+        decimal? filterValue,
+        decimal tolerance = 1)
         {
-            return !string.IsNullOrEmpty(filterValue)
-                ? data.Where(item => propertySelector(item)?.Contains(filterValue ?? "") == true)
-                : data;
+            if (filterValue != null)
+            {
+                return data.Where(item => Math.Abs(propertySelector(item) - filterValue.Value) <= tolerance);
+            }
+            else
+            {
+                return data;
+            }
         }
+
     }
 }

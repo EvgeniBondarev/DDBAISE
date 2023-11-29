@@ -20,23 +20,26 @@ using System.Data;
 
 namespace PostCity.Controllers
 {
-
+    
     public class SubscriptionsController : Controller
     {
         private readonly PostCityContext _context;
         private readonly SubscriptionCache _cache;
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Subscription> _filter;
+        private readonly SessionLogger _logger;
 
         public SubscriptionsController(PostCityContext context,
                                        SubscriptionCache cache,
                                        CookiesManeger cookiesManeger,
-                                       FilterBy<Subscription> filter)
+                                       FilterBy<Subscription> filter,
+                                       SessionLogger logger)
         {
             _context = context;
             _cache = cache;
             _cookies = cookiesManeger;
             _filter = filter;
+            _logger = logger;
         }
 
         // GET: Subscriptions
@@ -50,7 +53,7 @@ namespace PostCity.Controllers
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(postCityContext);
 
             var pageViewModel = new PageViewModel<Subscription, SubscriptionFilterModel>(postCityContext, page, pageSize, filterData);
@@ -68,9 +71,10 @@ namespace PostCity.Controllers
             data = _filter.FilterByDate(data, sb => sb.SubscriptionStartDate, filterData.StartDate);
             data = _filter.FilterByString(data, pn => pn.Office.StreetName, filterData.OfficeName);
             data = _filter.FilterByString(data, pn => pn.Publication.Name, filterData.PublicationName);
-            data = _filter.FilterByString(data, pn => pn.Employee.Name, filterData.EmployeeName);
+            data = _filter.FilterByString(data, pn => pn.Recipient.FullName, filterData.RecipientName);
+            data = _filter.FilterByString(data, pn => pn.Employee.FullName, filterData.EmployeeName);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(data);
 
             var pageViewModel = new PageViewModel<Subscription, SubscriptionFilterModel>(data, page, pageSize, filterData);
@@ -93,7 +97,7 @@ namespace PostCity.Controllers
             return View(subscription);
         }
 
-        // GET: Subscriptions/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName");
@@ -103,12 +107,9 @@ namespace PostCity.Controllers
             return View();
         }
 
-        // POST: Subscriptions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ServiceFilter(typeof(DatabaseSaveFilter))]
         public async Task<IActionResult> Create([Bind("Id,RecipientId,PublicationId,Duration,OfficeId,EmployeeId,SubscriptionStartDate")] Subscription subscription)
         {
             if (ModelState.IsValid)
@@ -116,6 +117,7 @@ namespace PostCity.Controllers
                 _context.Add(subscription);
                 await _context.SaveChangesAsync();
                 _cache.Update();
+                _logger.LogInformation($"Add new subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", subscription.EmployeeId);
@@ -125,7 +127,7 @@ namespace PostCity.Controllers
             return View(subscription);
         }
 
-        // GET: Subscriptions/Edit/5
+        
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -146,12 +148,9 @@ namespace PostCity.Controllers
             return View(subscription);
         }
 
-        // POST: Subscriptions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ServiceFilter(typeof(DatabaseSaveFilter))]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,RecipientId,PublicationId,Duration,OfficeId,EmployeeId,SubscriptionStartDate")] Subscription subscription)
         {
@@ -167,6 +166,7 @@ namespace PostCity.Controllers
                     _context.Update(subscription);
                     await _context.SaveChangesAsync();
                     _cache.Update();
+                    _logger.LogInformation($"Edit subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -188,7 +188,6 @@ namespace PostCity.Controllers
             return View(subscription);
         }
 
-        // GET: Subscriptions/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -211,7 +210,7 @@ namespace PostCity.Controllers
             return View(subscription);
         }
 
-        // POST: Subscriptions/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -224,9 +223,11 @@ namespace PostCity.Controllers
             if (subscription != null)
             {
                 _context.Subscriptions.Remove(subscription);
+                _logger.LogInformation($"Delete subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
             }
 
             await _context.SaveChangesAsync();
+            _cache.Update();
             return RedirectToAction(nameof(Index));
         }
 

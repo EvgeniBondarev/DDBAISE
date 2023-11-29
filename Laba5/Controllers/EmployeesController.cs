@@ -25,6 +25,7 @@ using PostCity.ViewModels.Sort;
 
 namespace PostCity.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class EmployeesController : Controller
     {
         private readonly PostCityContext _context;
@@ -33,7 +34,8 @@ namespace PostCity.Controllers
         private readonly FilterBy<Employee> _filter;
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly UserManager<PostCityUser> _userManager;
-        private readonly UserCache _userCache;
+        private readonly CacheUpdater _cacheUpdater;
+        private readonly SessionLogger _logger;
 
         public EmployeesController(PostCityContext context,
                                    EmployeeCache employeeCache,
@@ -41,7 +43,8 @@ namespace PostCity.Controllers
                                    FilterBy<Employee> filter,
                                    UserRegistrationManager userRegistrationManager,
                                    UserManager<PostCityUser> userManager,
-                                   UserCache userCache)
+                                   CacheUpdater cacheUpdater,
+                                   SessionLogger logger)
         {
             _context = context;
             _cache = employeeCache;
@@ -49,7 +52,8 @@ namespace PostCity.Controllers
             _filter = filter;
             _userRegistrationManager = userRegistrationManager;
             _userManager = userManager;
-            _userCache = userCache;
+            _cacheUpdater = cacheUpdater;
+            _logger = logger;
         }
 
         // GET: Employees
@@ -85,9 +89,6 @@ namespace PostCity.Controllers
 
             int pageSize = 15;
             _cache.Set(data);
-            var count = data.Count();
-            var items = data.Skip((page - 1) * pageSize).Take(pageSize);
-
             var pageViewModel = new PageViewModel<Employee, EmployeeFilterModel>(data, page, pageSize, filterData);
             return View(pageViewModel);
         }
@@ -99,10 +100,7 @@ namespace PostCity.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees
-                .Include(e => e.Office)
-                .Include(e => e.Position)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var employee = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -152,8 +150,8 @@ namespace PostCity.Controllers
                         if (result.Succeeded)
                         {
                             transaction.Commit();
-                            _cache.Update();
-                            _userCache.Update();
+                            _cacheUpdater.Update(_cache);
+                            _logger.LogInformation($"Add new employee ({employee.FullName})");
                             return Redirect("/Role/UserList");
 
                         }
@@ -219,8 +217,8 @@ namespace PostCity.Controllers
                 {
                     _context.Update(employee);
                     await _context.SaveChangesAsync();
-                    _cache.Update();
-                    _userCache.Update();
+                    _cacheUpdater.Update(_cache);
+                    _logger.LogInformation($"Edit employee ({employee.FullName})");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -249,10 +247,7 @@ namespace PostCity.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees
-                .Include(e => e.Office)
-                .Include(e => e.Position)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var employee =_cache.Get().FirstOrDefault(m => m.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -274,6 +269,7 @@ namespace PostCity.Controllers
             if (employee != null)
             {
                 _context.Employees.Remove(employee);
+                _logger.LogInformation($"Delete employee ({employee.FullName})");
             }
 
             int isDelete = await _context.SaveChangesAsync();
@@ -282,8 +278,7 @@ namespace PostCity.Controllers
                 PostCityUser user = _context.FindUserByUserId(employee.Id);
                 IdentityResult result = await _userManager.DeleteAsync(user);
             }
-            _cache.Update();
-            _userCache.Update();
+            _cacheUpdater.Update(_cache);
             return RedirectToAction(nameof(Index));
         }
 

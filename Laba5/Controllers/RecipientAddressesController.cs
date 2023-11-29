@@ -8,27 +8,24 @@ using Microsoft.EntityFrameworkCore;
 using Laba4.Models;
 using PostCity.Models;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Laba4.Controllers
 {
     public class RecipientAddressesController : Controller
     {
         private readonly PostCityContext _context;
+        private readonly SessionLogger _logger;
 
-        public RecipientAddressesController(PostCityContext context)
+        public RecipientAddressesController(PostCityContext context, SessionLogger logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // GET: RecipientAddresses
-        public async Task<IActionResult> Index()
-        {
-              return _context.RecipientAddresses != null ? 
-                          View(await _context.RecipientAddresses.ToListAsync()) :
-                          Problem("Entity set 'PostCityContext.RecipientAddresses'  is null.");
-        }
 
-        // GET: RecipientAddresses/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.RecipientAddresses == null)
@@ -46,15 +43,13 @@ namespace Laba4.Controllers
             return View(recipientAddress);
         }
 
-        // GET: RecipientAddresses/Create
+        
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: RecipientAddresses/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Street,House,Apartment")] RecipientAddress recipientAddress)
@@ -62,6 +57,7 @@ namespace Laba4.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(recipientAddress);
+                _logger.LogInformation($"Add new recipient address ({recipientAddress.FulAddress})");
                 int result = await _context.SaveChangesAsync();
                 if(result == 1)
                 {
@@ -84,7 +80,8 @@ namespace Laba4.Controllers
             return View(recipientAddress);
         }
 
-        // GET: RecipientAddresses/Edit/5
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.RecipientAddresses == null)
@@ -100,9 +97,8 @@ namespace Laba4.Controllers
             return View(recipientAddress);
         }
 
-        // POST: RecipientAddresses/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Street,House,Apartment")] RecipientAddress recipientAddress)
@@ -117,6 +113,7 @@ namespace Laba4.Controllers
                 try
                 {
                     _context.Update(recipientAddress);
+                    _logger.LogInformation($"Edit recipient address ({recipientAddress.FulAddress})");
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -135,7 +132,8 @@ namespace Laba4.Controllers
             return View(recipientAddress);
         }
 
-        // GET: RecipientAddresses/Delete/5
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.RecipientAddresses == null)
@@ -153,7 +151,8 @@ namespace Laba4.Controllers
             return View(recipientAddress);
         }
 
-        // POST: RecipientAddresses/Delete/5
+
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -166,6 +165,7 @@ namespace Laba4.Controllers
             if (recipientAddress != null)
             {
                 _context.RecipientAddresses.Remove(recipientAddress);
+                _logger.LogInformation($"Delete recipient address ({recipientAddress.FulAddress})");
             }
             
             await _context.SaveChangesAsync();

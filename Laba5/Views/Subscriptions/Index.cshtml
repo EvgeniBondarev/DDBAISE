@@ -13,17 +13,19 @@
 }
 
 <h1>Subscriptions</h1>
+@if(User.IsInRole("Admin")){
+        <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <script>
     function clearForm() {
         document.getElementById("durationFilter").value = "";
         document.getElementById("startDateFilter").value = "";
         document.getElementById("officeNameFilter").value = "";
         document.getElementById("publicationNameFilter").value = "";
-        document.getElementById("recipientEmailFilter").value = "";
+        document.getElementById("recipientNameFilter").value = "";
         document.getElementById("employeeNameFilter").value = "";
     }
 </script>
@@ -53,11 +55,11 @@
                             <input asp-for="@Model.FilterModel.PublicationName" id="publicationNameFilter" name="PublicationName" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
-                            <label for="recipientEmailFilter" class="form-label">Recipient Email:</label>
-                            <input asp-for="@Model.FilterModel.RecipientEmail" id="recipientEmailFilter" name="RecipientEmail" class="form-control form-control-sm" /><br />
+                            <label for="recipienNameFilter" class="form-label">Recipient:</label>
+                            <input asp-for="@Model.FilterModel.RecipientName" id="recipientNameFilter" name="RecipientName" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
-                            <label for="employeeNameFilter" class="form-label">Employee Name:</label>
+                            <label for="employeeNameFilter" class="form-label">Employee:</label>
                             <input asp-for="@Model.FilterModel.EmployeeName" id="employeeNameFilter" name="EmployeeName" class="form-control form-control-sm" /><br />
                         </div>
                         <button type="submit" class="btn btn-primary">Apply Filters</button><br />

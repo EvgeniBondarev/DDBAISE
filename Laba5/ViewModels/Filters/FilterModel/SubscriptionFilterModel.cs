@@ -8,7 +8,7 @@ namespace PostCity.ViewModels.Filters
         public DateTime? StartDate { get; set; }
         public string? OfficeName { get; set; }
         public string? PublicationName { get; set; }
-        public string? RecipientEmail { get; set; }
+        public string? RecipientName { get; set; }
         public string? EmployeeName { get; set; }
 
     }

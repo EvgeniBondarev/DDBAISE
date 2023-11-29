@@ -27,8 +27,8 @@ namespace Laba4.Controllers
         private readonly PostCityContext _context;
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<UserViewModel> _filter;
-        private readonly RecipientCache _recipientCache;
-        private readonly EmployeeCache _employeeCache;
+        private readonly CacheUpdater _cacheUpdater;
+        private readonly SessionLogger _logger;
 
         public UserController(RoleManager<IdentityRole> roleManager,
                               UserManager<PostCityUser> userManager, 
@@ -36,8 +36,9 @@ namespace Laba4.Controllers
                               UserCache cache,
                               CookiesManeger cookiesManeger,
                               FilterBy<UserViewModel> filter,
-                              RecipientCache recipientCache,
-                              EmployeeCache employeeCache)
+                              CacheUpdater cacheUpdater,
+                              SessionLogger sessionLogger
+                              )
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -45,8 +46,8 @@ namespace Laba4.Controllers
             _cache = cache;
             _cookies = cookiesManeger;
             _filter = filter;
-            _recipientCache = recipientCache;
-            _employeeCache = employeeCache;
+            _cacheUpdater = cacheUpdater;
+            _logger = sessionLogger;
         }
         public async Task<IActionResult> Index(UserSortState sortOrder = UserSortState.StandardState, int page = 1)
         {
@@ -101,8 +102,8 @@ namespace Laba4.Controllers
                 IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(name));
                 if (result.Succeeded)
                 {
-                    _cache.Update();
-                    _employeeCache.Update();
+                    _cacheUpdater.Update(_cache);
+                    _logger.LogInformation($"Add new user ({name})");
                     return RedirectToAction("Index");
                 }
                 else
@@ -142,7 +143,6 @@ namespace Laba4.Controllers
                         if (employee != null)
                         {
                             _context.Employees.Remove(employee);
-                            _employeeCache.Update();
                         }
                     }
                     else if(userRole == "Recipient")
@@ -151,7 +151,6 @@ namespace Laba4.Controllers
                         if (recipient != null)
                         {
                             _context.Recipients.Remove(recipient);
-                            _recipientCache.Update();
                         }
                     }
 
@@ -162,8 +161,9 @@ namespace Laba4.Controllers
 
                         await _userManager.DeleteAsync(user);
                     }
-                
-                    _cache.Update();
+
+                _cacheUpdater.Update(_cache);
+                _logger.LogInformation($"Delete user ({user.Email})");
             }
             return RedirectToAction("Index");
         }

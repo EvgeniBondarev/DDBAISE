@@ -11,6 +11,9 @@ using Laba4.Data.Cache;
 using Laba4.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 IServiceCollection services = builder.Services;
 
 string connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
@@ -42,8 +45,13 @@ services.AddTransient<EmployeeCache>();
 services.AddTransient<OfficeCache>();
 services.AddTransient<RecipientCache>();
 services.AddTransient<UserCache>();
+services.AddTransient<PublicationCache>();
+services.AddTransient<CacheUpdater>();
 
 services.AddTransient<UserInitializer>();
+
+services.AddTransient<SessionLogger>();
+
 
 var app = builder.Build();
 

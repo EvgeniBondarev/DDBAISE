@@ -22,9 +22,11 @@ using Newtonsoft.Json;
 using Laba4.Data;
 using Laba4.Models.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Laba4.Controllers
 {
+    
     public class RecipientsController : Controller
     {
         private readonly PostCityContext _context;
@@ -33,7 +35,8 @@ namespace Laba4.Controllers
         private readonly FilterBy<Recipient> _filter;
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly UserManager<PostCityUser> _userManager;
-        private readonly UserCache _userCache;
+        private readonly CacheUpdater _cacheUpdater;
+        private readonly SessionLogger _logger;
 
         public RecipientsController(PostCityContext context, 
                                     RecipientCache recipientCache,
@@ -41,7 +44,9 @@ namespace Laba4.Controllers
                                     FilterBy<Recipient> filterBy,
                                     UserRegistrationManager userRegistrationManager,
                                     UserManager<PostCityUser> userManager,
-                                    UserCache userCache)
+                                    UserCache userCache,
+                                    CacheUpdater cacheUpdater,
+                                    SessionLogger logger)
         {
             _context = context;
             _cache = recipientCache;
@@ -49,10 +54,11 @@ namespace Laba4.Controllers
             _filter = filterBy;
             _userRegistrationManager = userRegistrationManager;
             _userManager = userManager;
-            _userCache = userCache;
+            _cacheUpdater = cacheUpdater;
+            _logger = logger;
         }
 
-        // GET: Recipients
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(RecipientSortState sortOrder = RecipientSortState.StandardState, int page = 1)
         {
             var postCityContext = _cache.Get();
@@ -68,6 +74,7 @@ namespace Laba4.Controllers
             var pageViewModel = new PageViewModel<Recipient, RecipientFilterModel>(postCityContext, page, pageSize, filterData);
             return View(pageViewModel);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Index(RecipientFilterModel filterData, int page = 1)
         {
@@ -89,7 +96,7 @@ namespace Laba4.Controllers
             return View(pageViewModel);
         }
 
-        // GET: Recipients/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Recipients == null)
@@ -97,9 +104,7 @@ namespace Laba4.Controllers
                 return NotFound();
             }
 
-            var recipient = await _context.Recipients
-                .Include(r => r.Address)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var recipient = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (recipient == null)
             {
                 return NotFound();
@@ -130,6 +135,7 @@ namespace Laba4.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> SaveFields([Bind("Id,Name,Middlename,Surname, MobilePhone")] Recipient recipient)
         {
             if (ModelState.IsValid)
@@ -188,9 +194,9 @@ namespace Laba4.Controllers
                             if (result.Succeeded)
                             {
                                 transaction.Commit();
-                                _cache.Update();
-                                _userCache.Update();
+                                _cacheUpdater.Update(_cache);
                                 Response.Cookies.Delete("RecipientFields");
+                                _logger.LogInformation($"Add new recipient ({newRecipient.FullName})");
                                 return Redirect("/Identity/Account/Login");
 
                             }
@@ -226,8 +232,7 @@ namespace Laba4.Controllers
             ViewData["AddressId"] = new SelectList(_context.RecipientAddresses, "Id", "FulAddress", recipient.AddressId);
             return View(recipient);
         }
-
-        // GET: Recipients/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Recipients == null)
@@ -244,9 +249,7 @@ namespace Laba4.Controllers
             return View(recipient);
         }
 
-        // POST: Recipients/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Middlename,Surname,AddressId,MobilePhone")] Recipient recipient)
@@ -262,8 +265,8 @@ namespace Laba4.Controllers
                 {
                     _context.Update(recipient);
                     await _context.SaveChangesAsync();
-                    _cache.Update();
-                    _userCache.Update();
+                    _cacheUpdater.Update(_cache);
+                    _logger.LogInformation($"Edit recipient ({recipient.FullName})");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -282,7 +285,7 @@ namespace Laba4.Controllers
             return View(recipient);
         }
 
-        // GET: Recipients/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Recipients == null)
@@ -290,9 +293,7 @@ namespace Laba4.Controllers
                 return NotFound();
             }
 
-            var recipient = await _context.Recipients
-                .Include(r => r.Address)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var recipient = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (recipient == null)
             {
                 return NotFound();
@@ -301,7 +302,7 @@ namespace Laba4.Controllers
             return View(recipient);
         }
 
-        // POST: Recipients/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -314,7 +315,7 @@ namespace Laba4.Controllers
             if (recipient != null)
             {
                 _context.Recipients.Remove(recipient);
-                
+                _logger.LogInformation($"Delete recipient ({recipient.FullName})");
             }
             
             int isDelete = await _context.SaveChangesAsync();
@@ -323,8 +324,7 @@ namespace Laba4.Controllers
                 PostCityUser user = _context.FindUserByUserId(recipient.Id);
                 IdentityResult result = await _userManager.DeleteAsync(user);
             }
-            _cache.Update();
-            _userCache.Update();
+            _cacheUpdater.Update(_cache);
             return RedirectToAction(nameof(Index));
         }
 

@@ -8,7 +8,7 @@ using PostCity.Models;
 
 namespace Laba4.Data.Cache
 {
-    public class UserCache 
+    public class UserCache : IAppCache
     {
         private readonly UserManager<PostCityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;

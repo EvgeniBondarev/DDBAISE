@@ -7,26 +7,84 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Laba4.Models;
 using PostCity.Models;
+using Microsoft.Data.SqlClient;
+using PostCity.ViewModels.Filters.FilterModel;
+using PostCity.ViewModels;
+using System.Net;
+using PostCity.ViewModels.Sort;
+using Laba4.ViewModels.Sort;
+using PostCity.Data.Cache;
+using PostCity.Data.Cookies;
+using PostCity.Infrastructure.Filters;
+using Laba4.Data.Cache;
+using Laba4.ViewModels.Filters.FilterModel;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Laba4.Controllers
 {
+ 
     public class PublicationsController : Controller
     {
         private readonly PostCityContext _context;
+        private readonly PublicationCache _cache;
+        private readonly CookiesManeger _cookies;
+        private readonly FilterBy<Publication> _filter;
+        private readonly CacheUpdater _cacheUpdater;
+        private readonly SessionLogger _logger;
 
-        public PublicationsController(PostCityContext context)
-        {
+        public PublicationsController(PostCityContext context,
+                                      PublicationCache publicationCache,
+                                      CookiesManeger cookies,
+                                      FilterBy<Publication> filter,
+                                      CacheUpdater cacheUpdater,
+                                      SessionLogger sessionLogger)
+        { 
             _context = context;
+            _cache = publicationCache;
+            _cookies = cookies;
+            _filter = filter;
+            _cacheUpdater = cacheUpdater;
+            _logger = sessionLogger;
         }
 
-        // GET: Publications
-        public async Task<IActionResult> Index()
+      
+        public async Task<IActionResult> Index(PublicationSortState sortOrder = PublicationSortState.StandardState, int page = 1)
         {
-            var postCityContext = _context.Publications.Include(p => p.Type);
-            return View(await postCityContext.ToListAsync());
+            var postCityContext = _cache.Get();
+            PublicationFilterModel filterData = _cookies.GetFromCookies<PublicationFilterModel>(Request.Cookies, "PublicationFilterData");
+
+            SetSortOrderViewData(sortOrder);
+            postCityContext = ApplySortOrder(postCityContext, sortOrder);
+
+            int pageSize = 15;
+            _cache.Set(postCityContext);
+
+            var pageViewModel = new PageViewModel<Publication, PublicationFilterModel>(postCityContext, page, pageSize, filterData);
+
+            return View(pageViewModel);
         }
 
-        // GET: Publications/Details/5
+        [HttpPost]
+        public async Task<IActionResult> Index(PublicationFilterModel filterData, int page = 1)
+        {
+            _cache.Update();
+            _cookies.SaveToCookies(Response.Cookies, "PublicationFilterData", filterData);
+
+            var data = _cache.Get();
+
+            data = _filter.FilterByString(data, pn => pn.Name, filterData.Name);
+            data = _filter.FilterByString(data, pn => pn.Type.Type, filterData.Type);
+            data = _filter.FilterByDecimal(data, pn => pn.Price, filterData.Price);
+
+
+            int pageSize = 15;
+            _cache.Set(data);
+
+            var pageViewModel = new PageViewModel<Publication, PublicationFilterModel>(data, page, pageSize, filterData);
+            return View(pageViewModel);
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Publications == null)
@@ -34,9 +92,7 @@ namespace Laba4.Controllers
                 return NotFound();
             }
 
-            var publication = await _context.Publications
-                .Include(p => p.Type)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var publication = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (publication == null)
             {
                 return NotFound();
@@ -45,16 +101,14 @@ namespace Laba4.Controllers
             return View(publication);
         }
 
-        // GET: Publications/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["TypeId"] = new SelectList(_context.PublicationTypes, "Id", "Type");
             return View();
         }
 
-        // POST: Publications/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,TypeId,Name,Price")] Publication publication)
@@ -63,13 +117,15 @@ namespace Laba4.Controllers
             {
                 _context.Add(publication);
                 await _context.SaveChangesAsync();
+                _cacheUpdater.Update(_cache);
+                _logger.LogInformation($"Add new publication ({publication.Name})");
                 return RedirectToAction(nameof(Index));
             }
             ViewData["TypeId"] = new SelectList(_context.PublicationTypes, "Id", "Type", publication.TypeId);
             return View(publication);
         }
 
-        // GET: Publications/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Publications == null)
@@ -86,12 +142,10 @@ namespace Laba4.Controllers
             return View(publication);
         }
 
-        // POST: Publications/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TypeId,Name,Price")] Publication publication)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Name,Price")] Publication publication)
         {
             if (id != publication.Id)
             {
@@ -104,6 +158,8 @@ namespace Laba4.Controllers
                 {
                     _context.Update(publication);
                     await _context.SaveChangesAsync();
+                    _cacheUpdater.Update(_cache);
+                    _logger.LogInformation($"Edit publication ({publication.Name})");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -122,7 +178,7 @@ namespace Laba4.Controllers
             return View(publication);
         }
 
-        // GET: Publications/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Publications == null)
@@ -130,9 +186,7 @@ namespace Laba4.Controllers
                 return NotFound();
             }
 
-            var publication = await _context.Publications
-                .Include(p => p.Type)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var publication = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (publication == null)
             {
                 return NotFound();
@@ -141,7 +195,7 @@ namespace Laba4.Controllers
             return View(publication);
         }
 
-        // POST: Publications/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -154,15 +208,48 @@ namespace Laba4.Controllers
             if (publication != null)
             {
                 _context.Publications.Remove(publication);
+                _logger.LogInformation($"Delete publication ({publication.Name})");
             }
             
             await _context.SaveChangesAsync();
+            _cacheUpdater.Update(_cache);
             return RedirectToAction(nameof(Index));
         }
 
         private bool PublicationExists(int id)
         {
           return (_context.Publications?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        public void SetSortOrderViewData(PublicationSortState sortOrder)
+        {
+            ViewData["NameSort"] = sortOrder == PublicationSortState.NameAsc
+                ? PublicationSortState.NameDesc
+                : PublicationSortState.NameAsc;
+
+            ViewData["TypeSort"] = sortOrder == PublicationSortState.TypeAsc
+                ? PublicationSortState.TypeDesc
+                : PublicationSortState.TypeAsc;
+
+            ViewData["PriceSort"] = sortOrder == PublicationSortState.PriceAsc
+                ? PublicationSortState.PriceDesc
+                : PublicationSortState.PriceAsc;
+        }
+
+        public IEnumerable<Publication> ApplySortOrder(IEnumerable<Publication> postCityContext, PublicationSortState sortOrder)
+        {
+            return sortOrder switch
+            {
+                PublicationSortState.NameDesc => postCityContext.OrderByDescending(n => n.Name),
+                PublicationSortState.NameAsc => postCityContext.OrderBy(n => n.Name),
+
+                PublicationSortState.TypeDesc => postCityContext.OrderByDescending(t => t.Type.Type),
+                PublicationSortState.TypeAsc => postCityContext.OrderBy(t => t.Type.Type),
+
+                PublicationSortState.PriceDesc => postCityContext.OrderByDescending(p => p.Price),
+                PublicationSortState.PriceAsc => postCityContext.OrderBy(p => p.Price),
+
+                PublicationSortState.StandardState => postCityContext
+            };
         }
     }
 }

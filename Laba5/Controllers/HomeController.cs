@@ -1,4 +1,6 @@
 ﻿
+using Laba4.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
@@ -10,29 +12,58 @@ namespace Laba4.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<PostCityUser> _userManager;
+        private readonly PostCityContext _context;
+        private readonly SessionLogger _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(UserManager<PostCityUser> userManager, PostCityContext context, SessionLogger logger)
         {
-            _logger = logger;      
+            _userManager = userManager;
+            _context = context;
+            _logger = logger;
         }
 
         public IActionResult Index()
         {
-            string result = "";
-            if (Request.Cookies.TryGetValue("UserCredentials", out string credentialsJson))
-            {
-                var credentials = JsonConvert.DeserializeAnonymousType(credentialsJson, new { Email = "", Password = "" });
+            PostCityUser currentUser = _userManager.GetUserAsync(User).Result;
 
-                result = $"Email: {credentials.Email},\nPassword: {credentials.Password}";
-            }
-            else
+            if (currentUser != null)
             {
-                result = "Cookie с именем 'UserCredentials' не найдена.";
-            }
-            ViewBag.Result = result;
+                ViewData["Email"] = currentUser.Email;
 
-            return View();
+                var roles = _userManager.GetRolesAsync(currentUser).Result;
+                var userRole = roles.FirstOrDefault();
+
+                ViewData["Role"] = userRole;
+                ViewData["UserId"] = currentUser.UserId;
+
+                if (userRole == "Employee")
+                {
+                    Employee employee = _context.Employees.Find(currentUser.UserId);
+                    if (employee != null)
+                    {
+                        ViewData["Name"] = employee.FullName;
+                        ViewData["Office"] = employee.OfficeId;
+                        ViewData["Position"] = employee.Position;
+                    }
+                }
+                else if (userRole == "Recipient")
+                {
+                    Recipient recipient = _context.Recipients.Find(currentUser.UserId);
+                    if (recipient != null)
+                    {
+                        ViewData["Name"] = recipient.FullName;
+                        ViewData["Phone"] = recipient.MobilePhone;
+                    }
+                }
+                else if (userRole == "Admin")
+                {
+
+                }
+            }
+
+            List<string> logs = _logger.GetSessionLogs();
+            return View(logs);
         }
 
         public IActionResult Privacy()
