@@ -24,5 +24,10 @@ namespace PostCity.Models
 
         [ForeignKey("TypeId")]
         public virtual PublicationType? Type { get; set; } = null!;
+        public override string ToString()
+        {
+            return $"{Name}\t{Type.Type}\t{Price} руб.";
+
+        }
     }
 }

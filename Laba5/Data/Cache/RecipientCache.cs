@@ -25,7 +25,7 @@ namespace Laba4.Data.Cache
 
         public override IEnumerable<Recipient> Set()
         {
-            var recipients = _db.Recipients.Include(a => a.Address).ToList();
+            var recipients = _db.Recipients.Include(a => a.Address).Include(s => s.Subscriptions).ThenInclude(s => s.Publication).ToList();
             _cache.Set("Recipient", recipients, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));
             return recipients;
         }

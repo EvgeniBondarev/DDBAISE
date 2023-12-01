@@ -57,7 +57,7 @@ namespace Laba4.Controllers
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(postCityContext);
 
             var pageViewModel = new PageViewModel<Publication, PublicationFilterModel>(postCityContext, page, pageSize, filterData);
@@ -78,7 +78,7 @@ namespace Laba4.Controllers
             data = _filter.FilterByDecimal(data, pn => pn.Price, filterData.Price);
 
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(data);
 
             var pageViewModel = new PageViewModel<Publication, PublicationFilterModel>(data, page, pageSize, filterData);

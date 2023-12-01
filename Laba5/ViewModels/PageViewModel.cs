@@ -4,6 +4,7 @@ namespace PostCity.ViewModels
 {
     public class PageViewModel<T, K>
     {
+        public string Info { get; set; }
         public int PageNumber { get; }
         public int TotalPages { get; }
         public bool HasPreviousPage => PageNumber > 1;

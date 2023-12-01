@@ -10,6 +10,7 @@ namespace PostCity.ViewModels.Filters
         public string? PublicationName { get; set; }
         public string? RecipientName { get; set; }
         public string? EmployeeName { get; set; }
-
+        public DateTime? StartPeriod { get; set; }
+        public DateTime? EndPeriod { get; set; }
     }
 }

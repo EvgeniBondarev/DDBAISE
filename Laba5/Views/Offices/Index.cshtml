@@ -67,113 +67,115 @@
         </div>
 
         <div class="col-md-10">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerNameSort">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerNameSort">
                                 @if (ViewBag.OwnerNameSort == OfficeSortState.OwnerNameAsc)
                                 {
-                                    <p>Owner Name ↑</p>
+                                <b>Owner Name ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Owner Name ↓</p>
+                                <b>Owner Name ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerMiddlenameSort">
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerMiddlenameSort">
                                 @if (ViewBag.OwnerMiddlenameSort == OfficeSortState.OwnerMiddlenameAsc)
                                 {
-                                    <p>Owner Middlename↑</p>
+                                <b>Owner Middlename ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Owner Middlename↓</p>
+                                <b>Owner Middlename ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerSurnameSort">
-                                @if (ViewBag.OwnerSurname == OfficeSortState.OwnerSurnameAsc)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.OwnerSurnameSort">
+                                @if (ViewBag.OwnerSurnameSort == OfficeSortState.OwnerSurnameAsc)
                                 {
-                                    <p>Owner Surname ↑</p>
+                                <b>Owner Surname ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Owner Surname ↓</p>
+                                <b>Owner Surname ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.StreetNameSort">
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.StreetNameSort">
                                 @if (ViewBag.StreetNameSort == OfficeSortState.StreetNameAsc)
                                 {
-                                    <p>Street Name ↑</p>
+                                <b>Street Name ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Street Name ↓</p>
+                                <b>Street Name ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th>
-                            <p>MobilePhone</p>
-                        </th>
-                        <th>
-                            <p>Email</p>
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-            @foreach (var item in Model.Items) {
+                    </a>
+                </th>
+                <th>
+                    <b>MobilePhone</b>
+                </th>
+                <th>
+                    <b>Email</b>
+                </th>
+                <th><b>Actions</b></th>
+            </tr>
+        </thead>
+        <tbody>
+                    @foreach (var item in Model.Items)
+                    {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.OwnerName)
+                                @Html.DisplayFor(modelItem => item.OwnerName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.OwnerMiddlename)
+                                @Html.DisplayFor(modelItem => item.OwnerMiddlename)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.OwnerSurname)
+                                @Html.DisplayFor(modelItem => item.OwnerSurname)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.StreetName)
+                                @Html.DisplayFor(modelItem => item.StreetName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.MobilePhone)
+                                @Html.DisplayFor(modelItem => item.MobilePhone)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Email)
+                                @Html.DisplayFor(modelItem => item.Email)
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                             <div class="btn-group">
+                                                    <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                                    <a class="btn btn-secondary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                                    <a class="btn btn-secondary" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </div>
                         </td>
+                        
                     </tr>
-            }
-                </tbody>
-            </table>
-            <p>
+                    }
+        </tbody>
+    </table>
+    <p>
                 @if (Model.HasPreviousPage)
                 {
-                    <a asp-action="Index"
-                   asp-route-page="@(Model.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
-                        Назад
-                    </a>
+                <a asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" class="btn btn-secondary">
+                    Назад
+                </a>
                 }
 
                 @if (Model.HasNextPage)
                 {
-                    <a asp-action="Index"
-                   asp-route-page="@(Model.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
-                        Вперед
-                    </a>
+                <a asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" class="btn btn-secondary">
+                    Вперед
+                </a>
                 }
-            </p>
-        </div>
-    </div>
+    </p>
+</div>
+
 </div>

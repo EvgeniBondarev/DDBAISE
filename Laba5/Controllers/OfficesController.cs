@@ -58,7 +58,7 @@ namespace PostCity.Controllers
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(postCityContext);
 
             var pageViewModel = new PageViewModel<Office, OfficeFilterModel>(postCityContext, page, pageSize, filterData);
@@ -80,7 +80,7 @@ namespace PostCity.Controllers
             data = _filter.FilterByString(data, pn => pn.MobilePhone, filterData.MobilePhone);
             data = _filter.FilterByString(data, pn => pn.Email, filterData.Email);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(data);   
 
             var pageViewModel = new PageViewModel<Office, OfficeFilterModel>(data, page, pageSize, filterData);

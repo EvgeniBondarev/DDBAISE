@@ -66,7 +66,7 @@ namespace PostCity.Controllers
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder).ToList();
 
-            int pageSize = 15;
+            int pageSize = 10;
 
             var pageViewModel = new PageViewModel<Employee, EmployeeFilterModel>(postCityContext, page, pageSize, filterData);
             return View(pageViewModel);
@@ -87,7 +87,7 @@ namespace PostCity.Controllers
             data = _filter.FilterByString(data, pn => pn.Office.StreetName, filterData.Office);
             data = _filter.FilterByString(data, pn => pn.Position.Position, filterData.Position);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(data);
             var pageViewModel = new PageViewModel<Employee, EmployeeFilterModel>(data, page, pageSize, filterData);
             return View(pageViewModel);

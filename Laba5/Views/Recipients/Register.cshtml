@@ -40,7 +40,14 @@
 
             <div class="form-group">
                 <label asp-for="Address" class="control-label"></label><br />
-                <button type="submit" value="SaveFields" asp-action="SaveFields" class="btn btn-primary btn-block">Add Address</button>
+                @if (ViewData["Address"] != null)
+                {
+                        <p>@ViewData["Address"]</p>
+                }
+                else{
+                    <button type="submit" value="SaveFields" asp-action="SaveFields" class="btn btn-primary btn-block">Add Address</button>
+                }
+                
             </div>
 
             @if (ViewData["ErrorMessage"] != null)

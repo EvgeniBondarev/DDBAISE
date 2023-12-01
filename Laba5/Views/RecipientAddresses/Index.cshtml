@@ -10,39 +10,41 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table table-striped table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Street)
+                <b>@Html.DisplayNameFor(model => model.Street)</b>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.House)
+                <b>@Html.DisplayNameFor(model => model.House)</b>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Apartment)
+                <b>@Html.DisplayNameFor(model => model.Apartment)</b>
             </th>
-            <th></th>
+            <th><b>Actions</b></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Street)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.House)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apartment)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+                <tr>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.Street)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.House)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.Apartment)
+                    </td>
+                    <div class="btn-group">
+
+                                        <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                        <a class="btn btn-secondary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                        <a class="btn btn-secondary" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                     </div>
+                </tr>
+        }
     </tbody>
 </table>

@@ -2,6 +2,19 @@
 /* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+body[b-1qhayj1anj] {
+    margin: 0;
+    padding: 0;
+}
+
+.container-fluid[b-1qhayj1anj] {
+    padding: 0;
+}
+
+main[b-1qhayj1anj] {
+    margin: 0;
+}
+
 a.navbar-brand[b-1qhayj1anj] {
   white-space: normal;
   text-align: center;
@@ -34,6 +47,7 @@ a[b-1qhayj1anj] {
 .box-shadow[b-1qhayj1anj] {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
+
 
 button.accept-policy[b-1qhayj1anj] {
   font-size: 1rem;

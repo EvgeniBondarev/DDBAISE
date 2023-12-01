@@ -17,6 +17,7 @@ using PostCity.Data.Cookies;
 using Laba4.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using Newtonsoft.Json.Linq;
 
 namespace PostCity.Controllers
 {
@@ -53,6 +54,8 @@ namespace PostCity.Controllers
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder);
 
+            
+
             int pageSize = 10;
             _cache.Set(postCityContext);
 
@@ -65,7 +68,7 @@ namespace PostCity.Controllers
             _cache.Update();
             _cookies.SaveToCookies(Response.Cookies, "SubscriptionFilterData", filterData);
 
-            var data = _cache.Get();
+            IEnumerable<Subscription> data = _cache.Get();
 
             data = _filter.FilterByInt(data, d => d.Duration, filterData.Duration);
             data = _filter.FilterByDate(data, sb => sb.SubscriptionStartDate, filterData.StartDate);
@@ -73,14 +76,42 @@ namespace PostCity.Controllers
             data = _filter.FilterByString(data, pn => pn.Publication.Name, filterData.PublicationName);
             data = _filter.FilterByString(data, pn => pn.Recipient.FullName, filterData.RecipientName);
             data = _filter.FilterByString(data, pn => pn.Employee.FullName, filterData.EmployeeName);
+            data = _filter.FilterByPeriod(data, pn => pn.SubscriptionStartDate, filterData.StartPeriod, filterData.EndPeriod);
+
+            var publicationPriceSum = data.Sum(subscription => subscription.Publication.Price);
 
             int pageSize = 10;
             _cache.Set(data);
 
             var pageViewModel = new PageViewModel<Subscription, SubscriptionFilterModel>(data, page, pageSize, filterData);
+
+            pageViewModel.Info = GetInfo(filterData, publicationPriceSum);
+
             return View(pageViewModel);
         }
-        // GET: Subscriptions/Details/5
+        public string GetInfo(SubscriptionFilterModel filterData, decimal publicationPriceSum)
+        {
+            string info = "Total publication price ";
+            if(filterData.StartPeriod != null && filterData.EndPeriod != null)
+            {
+                info += $"for the period from {filterData.StartPeriod.Value.ToString("dd.MM.yyyy")} to {filterData.EndPeriod.Value.ToString("dd.MM.yyyy")} ";
+            }
+            else if(filterData.StartPeriod != null && filterData.EndPeriod == null)
+            {
+                info += $"starting from {filterData.StartPeriod.Value.ToString("dd.MM.yyyy")} ";
+            }
+            else if (filterData.StartPeriod == null && filterData.EndPeriod != null)
+            {
+                info += $"ending from {filterData.EndPeriod.Value.ToString("dd.MM.yyyy")} ";
+            }
+            info += $"is {publicationPriceSum} руб ";
+            if(filterData.OfficeName != null)
+            {
+                info += $"for an office '{filterData.OfficeName}'";
+            }
+            info += ".";
+            return info;
+        }
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Subscriptions == null)
@@ -196,12 +227,7 @@ namespace PostCity.Controllers
                 return NotFound();
             }
 
-            var subscription = await _context.Subscriptions
-                .Include(s => s.Employee)
-                .Include(s => s.Office)
-                .Include(s => s.Publication)
-                .Include(s => s.Recipient)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var subscription = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (subscription == null)
             {
                 return NotFound();

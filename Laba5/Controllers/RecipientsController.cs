@@ -68,7 +68,7 @@ namespace Laba4.Controllers
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(postCityContext);
 
             var pageViewModel = new PageViewModel<Recipient, RecipientFilterModel>(postCityContext, page, pageSize, filterData);
@@ -89,7 +89,7 @@ namespace Laba4.Controllers
             data = _filter.FilterByString(data, m => m.MobilePhone, filterData.MobilePhone);
             data = _filter.FilterByString(data, a => a.Address.FulAddress, filterData.Address);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(data);
 
             var pageViewModel = new PageViewModel<Recipient, RecipientFilterModel>(data, page, pageSize, filterData);
@@ -105,6 +105,7 @@ namespace Laba4.Controllers
             }
 
             var recipient = _cache.Get().FirstOrDefault(m => m.Id == id);
+            
             if (recipient == null)
             {
                 return NotFound();
@@ -130,8 +131,22 @@ namespace Laba4.Controllers
                 ViewData["Surname"] = recipientFields.Surname;
                 ViewData["MobilePhone"] = recipientFields.MobilePhone;
             }
+            if (Request.Cookies.TryGetValue("UserCredentials", out string userCredentialsJson))
+            {
+                var userCredentials = JsonConvert.DeserializeAnonymousType(userCredentialsJson, new
+                {
+                    Email = "",
+                    Password = "",
+                    Address = new RecipientAddress()
+                });
 
-            return View();
+                if (userCredentials.Address.Street != null)
+                {
+                    ViewData["Address"] = userCredentials.Address.FulAddress;
+                }
+            }
+
+                return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -150,6 +165,7 @@ namespace Laba4.Controllers
 
                 return RedirectToAction("Create", "RecipientAddresses");
             }
+
             ViewData["AddressId"] = new SelectList(_context.RecipientAddresses, "Id", "FulAddress", recipient.AddressId);
             return View(recipient);
         }
@@ -196,6 +212,7 @@ namespace Laba4.Controllers
                                 transaction.Commit();
                                 _cacheUpdater.Update(_cache);
                                 Response.Cookies.Delete("RecipientFields");
+                                Response.Cookies.Delete("UserCredentials");
                                 _logger.LogInformation($"Add new recipient ({newRecipient.FullName})");
                                 return Redirect("/Identity/Account/Login");
 

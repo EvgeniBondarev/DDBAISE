@@ -55,5 +55,28 @@
             }
         }
 
+        public IEnumerable<T> FilterByPeriod(
+            IEnumerable<T> data,
+            Func<T, DateTime> propertySelector,
+            DateTime? startDate,
+            DateTime? endDate)
+        {
+            if (startDate != null && endDate != null)
+            {
+                return data.Where(item => propertySelector(item) >= startDate && propertySelector(item) <= endDate);
+            }
+            else if (startDate != null)
+            {
+                return data.Where(item => propertySelector(item) >= startDate);
+            }
+            else if (endDate != null)
+            {
+                return data.Where(item => propertySelector(item) <= endDate);
+            }
+            else
+            {
+                return data;
+            }
+        }
     }
 }
