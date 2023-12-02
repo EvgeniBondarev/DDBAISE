@@ -1,4 +1,6 @@
 ﻿using Laba4.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PostCity.Models;
 using System.Globalization;
 
@@ -8,46 +10,79 @@ namespace Laba4.Data
     {
         private readonly PostCityContext _context;
         private readonly Random _random;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<PostCityUser> _userManager;
 
 
-        public DbInitializer(PostCityContext context)
+        public DbInitializer(PostCityContext context,  
+                            RoleManager<IdentityRole> roleManager, 
+                            UserManager<PostCityUser> userManager)
         {
             _context = context;
             _random = new Random();
+            _roleManager = roleManager;
+            _userManager = userManager;
+
         }
 
         public void InitializeDb()
         {
-            ClearDatabase();
+            if (!_context.Database.CanConnect())
+            {
+                _context.Database.Migrate();
+            }
 
-            InitializePublicationTypes();
-            InitializePublications();
 
-            InitializeRecipientAddresses();
-            InitializeRecipients();
+            if (!_roleManager.Roles.Any())
+            {
+                CreateRoles().Wait();
+            }
+            if (!_userManager.Users.Any())
+            {
+                CreateAdmin().Wait();
+            };
 
-            InitializeOffices();
 
-            InitializeEmployeePositions();
-            InitializeEmployees();
-
-            InitializeSubscriptions();
-
-            Console.WriteLine("Db initialize");
-        }
-        private void ClearDatabase()
-        {
-            _context.Recipients.RemoveRange(_context.Recipients);
-            _context.Subscriptions.RemoveRange(_context.Subscriptions);
-            _context.Publications.RemoveRange(_context.Publications);
-            _context.Employees.RemoveRange(_context.Employees);
-            _context.Offices.RemoveRange(_context.Offices);
-            _context.RecipientAddresses.RemoveRange(_context.RecipientAddresses);
-            _context.EmployeePositions.RemoveRange(_context.EmployeePositions);
-            _context.PublicationTypes.RemoveRange(_context.PublicationTypes);
+            if (!_context.PublicationTypes.Any())
+            {
+                InitializePublicationTypes();
+            }
+            if (!_context.Publications.Any())
+            {
+                InitializePublications();
+            }
+            if (!_context.RecipientAddresses.Any())
+            {
+                InitializeRecipientAddresses();
+            }
+            if (!_context.Recipients.Any())
+            {
+                InitializeRecipients();
+                CreateRecipient().Wait();
+            }
+            if (!_context.Offices.Any())
+            {
+                InitializeOffices();
+            }
+            if (!_context.EmployeePositions.Any())
+            {
+                InitializeEmployeePositions();
+            }
+            if (!_context.Employees.Any())
+            {
+                InitializeEmployees();
+                CreateEmployees().Wait();
+            }
+            if (!_context.Subscriptions.Any())
+            {
+                InitializeSubscriptions();
+            }
 
             _context.SaveChanges();
+
+           
         }
+
 
         string[] lastNames = {
         "Иванов",
@@ -255,8 +290,6 @@ namespace Laba4.Data
             }
         }
 
-
-
         private void InitializeSubscriptions()
         {
             if (!_context.Subscriptions.Any())
@@ -291,6 +324,110 @@ namespace Laba4.Data
                 }
 
                 _context.SaveChanges();
+            }
+        }
+        //Identity
+        private async Task CreateRoles()
+        {
+            string[] roleNames = { "Admin", "Employee", "Recipient" };
+
+            foreach (var roleName in roleNames)
+            {
+
+                var roleExist = await _roleManager.RoleExistsAsync(roleName);
+
+                if (!roleExist)
+                {
+                    IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+        }
+
+        private async Task CreateAdmin()
+        {
+            if (_userManager.FindByNameAsync("admin@gmail.com").Result == null)
+            {
+                PostCityUser user = new PostCityUser
+                {
+                    UserId = 1,
+                    UserName = "admin@gmail.com",
+                    Email = "admin@gmail.com"
+                };
+
+                IdentityResult result = await _userManager.CreateAsync(user, "EQRu~ha+75hqIcr");
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Admin");
+                }
+            }
+
+        }
+        public async Task CreateEmployees()
+        {
+            var employees = await _context.Employees.ToListAsync();
+
+            foreach (var employee in employees)
+            {
+                var employeeToDelete = await _userManager.GetUsersInRoleAsync("Employee");
+                foreach (var recipient in employeeToDelete)
+                {
+                    var result = await _userManager.DeleteAsync(recipient);
+
+                }
+
+                var existingUser = await _userManager.FindByEmailAsync($"Employee{employee.Id}@gmail.com");
+
+                if (existingUser == null)
+                {
+                    PostCityUser user = new PostCityUser
+                    {
+                        UserId = employee.Id,
+                        UserName = $"Employee{employee.Id}@gmail.com",
+                        Email = $"Employee{employee.Id}@gmail.com"
+                    };
+                    var password = $"Employee_{employee.Id}";
+                    IdentityResult result = await _userManager.CreateAsync(user, password);
+
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, "Employee");
+                    }
+                }
+            }
+        }
+        public async Task CreateRecipient()
+        {
+            var recipientsToDelete = await _userManager.GetUsersInRoleAsync("Recipient");
+            foreach (var recipient in recipientsToDelete)
+            {
+                var result = await _userManager.DeleteAsync(recipient);
+
+            }
+
+
+            var recipients = await _context.Recipients.ToListAsync();
+
+            foreach (var recipient in recipients)
+            {
+                var existingUser = await _userManager.FindByEmailAsync($"Recipient{recipient.Id}@gmail.com");
+
+                if (existingUser == null)
+                {
+                    PostCityUser user = new PostCityUser
+                    {
+                        UserId = recipient.Id,
+                        UserName = $"Recipient{recipient.Id}@gmail.com",
+                        Email = $"Recipient{recipient.Id}@gmail.com"
+                    };
+                    var password = $"Recipient_{recipient.Id}";
+                    IdentityResult result = await _userManager.CreateAsync(user, password);
+
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, "Recipient");
+                    }
+                }
             }
         }
     }

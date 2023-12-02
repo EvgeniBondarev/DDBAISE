@@ -245,11 +245,12 @@ namespace PostCity.Controllers
             {
                 return Problem("Entity set 'PostCityContext.Subscriptions'  is null.");
             }
-            var subscription = await _context.Subscriptions.FindAsync(id);
+            var subscription = await _context.Subscriptions.Include(s => s.Publication).FirstOrDefaultAsync(s => s.Id == id);
             if (subscription != null)
             {
-                _context.Subscriptions.Remove(subscription);
                 _logger.LogInformation($"Delete subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
+                _context.Subscriptions.Remove(subscription);
+               
             }
 
             await _context.SaveChangesAsync();

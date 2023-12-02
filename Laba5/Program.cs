@@ -31,6 +31,7 @@ services.AddTransient<UserRegistrationManager>();
 
 
 
+
 services.AddMemoryCache();
 services.AddDistributedMemoryCache();
 services.AddSession();
@@ -48,9 +49,12 @@ services.AddTransient<UserCache>();
 services.AddTransient<PublicationCache>();
 services.AddTransient<CacheUpdater>();
 
-services.AddTransient<UserInitializer>();
+services.AddTransient<DbInitializer>();
 
 services.AddTransient<SessionLogger>();
+
+
+
 
 
 var app = builder.Build();
@@ -61,8 +65,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
-//app.UseDbInitializerMiddleware();
-app.UseUserDbInitializerMiddleware();
+app.UseDbInitializerMiddleware();
 app.UseStaticFiles();
 app.UseRouting();
 
