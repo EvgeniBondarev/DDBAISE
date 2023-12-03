@@ -365,17 +365,17 @@ namespace Laba4.Data
         }
         public async Task CreateEmployees()
         {
+            var employeeToDelete = await _userManager.GetUsersInRoleAsync("Employee");
+            foreach (var recipient in employeeToDelete)
+            {
+                var result = await _userManager.DeleteAsync(recipient);
+
+            }
+
             var employees = await _context.Employees.ToListAsync();
 
             foreach (var employee in employees)
             {
-                var employeeToDelete = await _userManager.GetUsersInRoleAsync("Employee");
-                foreach (var recipient in employeeToDelete)
-                {
-                    var result = await _userManager.DeleteAsync(recipient);
-
-                }
-
                 var existingUser = await _userManager.FindByEmailAsync($"Employee{employee.Id}@gmail.com");
 
                 if (existingUser == null)

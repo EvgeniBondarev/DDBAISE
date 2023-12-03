@@ -35,14 +35,16 @@
                                 <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="visually-hidden">Toggle Dropdown</span>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Publications" asp-action="Index">Publications</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Recipients" asp-action="Index">Recipients</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Offices" asp-action="Index">Offices</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Subscriptions" asp-action="Create">Create New</a></li>
-                                </ul>
+                                @if( User.IsInRole("Admin")){
+                                     <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Publications" asp-action="Index">Publications</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Recipients" asp-action="Index">Recipients</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Offices" asp-action="Index">Offices</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Subscriptions" asp-action="Create">Create New</a></li>
+                                    </ul>
+                                }
                             </div>
                         </li>
 
@@ -52,12 +54,14 @@
                                 <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="visually-hidden">Toggle Dropdown</span>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="PublicationTypes" asp-action="Index">Publication Types</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Publications" asp-action="Create">Create New</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="PublicationTypes" asp-action="Create">Create New Type</a></li>
-                                </ul>
+                                @if(User.IsInRole("Admin")){
+                                     <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="PublicationTypes" asp-action="Index">Publication Types</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Publications" asp-action="Create">Create New</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="PublicationTypes" asp-action="Create">Create New Type</a></li>
+                                    </ul>
+                                }
                             </div>
                         </li>
 
