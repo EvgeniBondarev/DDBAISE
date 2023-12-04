@@ -11,9 +11,6 @@ namespace PostCity.Models
         [Required]
         [MaxLength(100)]
         public string? Position { get; set; }
-
-        [InverseProperty("Position")]
-        [CascadeDelete]
         public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
     }
 }

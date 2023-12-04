@@ -24,16 +24,8 @@ namespace PostCity.Models
         public int PositionId { get; set; }
 
         public int OfficeId { get; set; }
-
-        [ForeignKey("OfficeId")]
         public Office? Office { get; set; }
-
-        [ForeignKey("PositionId")]
         public EmployeePosition? Position { get; set; }
-
-        [InverseProperty("Employee")]
-        [CascadeDelete]
-        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
         public override string ToString()
         {

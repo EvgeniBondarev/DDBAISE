@@ -11,9 +11,6 @@ namespace PostCity.Models
         [Required]
         [MaxLength(100)]
         public string Type { get; set; } = null!;
-
-        [InverseProperty("Type")]
-        [CascadeDelete]
         public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
     }
 }

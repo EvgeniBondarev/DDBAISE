@@ -28,11 +28,7 @@ namespace PostCity.Models
         [Phone]
         public string MobilePhone { get; set; }
 
-        [ForeignKey("AddressId")]
         public virtual RecipientAddress? Address { get; set; }
-
-        [InverseProperty("Recipient")]
-        [CascadeDelete]
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
         public override string ToString()

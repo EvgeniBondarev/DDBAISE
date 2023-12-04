@@ -21,27 +21,12 @@ namespace PostCity.Models
         [Required]
         public int OfficeId { get; set; }
 
-        [ForeignKey("EmployeeId")]
-        public int? EmployeeId { get; set; }
-
         [Required]
         [DataType(DataType.Date)]
         public DateTime SubscriptionStartDate { get; set; }
 
-        [InverseProperty("Subscriptions")]
-        [CascadeDelete]
         public Office? Office { get; set; } = null!;
-
-        [InverseProperty("Subscriptions")]
-        [CascadeDelete]
         public Publication? Publication { get; set; } = null!;
-
-        [InverseProperty("Subscriptions")]
-        [CascadeDelete]
         public Recipient? Recipient { get; set; } = null!;
-
-        [InverseProperty("Subscriptions")]
-        [CascadeDelete]
-        public Employee? Employee { get; set; }
     }
 }

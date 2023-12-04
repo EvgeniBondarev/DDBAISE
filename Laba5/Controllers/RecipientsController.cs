@@ -27,7 +27,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Laba4.Controllers
 {
     
-    public class RecipientsController : Controller
+    public class RecipientsController : Controller, ISortOrderController<Recipient, RecipientSortState>
     {
         private readonly PostCityContext _context;
         private readonly RecipientCache _cache;
@@ -280,7 +280,7 @@ namespace Laba4.Controllers
             {
                 try
                 {
-                    _context.Update(recipient);
+
                     await _context.SaveChangesAsync();
                     _cacheUpdater.Update(_cache);
                     _logger.LogInformation($"Edit recipient ({recipient.FullName})");

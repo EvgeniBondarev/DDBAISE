@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Laba4.Controllers;
 using Laba4.Data;
 using Laba4.Data.Cache;
 using Laba4.Models;
@@ -26,7 +27,7 @@ using PostCity.ViewModels.Sort;
 namespace PostCity.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class EmployeesController : Controller
+    public class EmployeesController : Controller, ISortOrderController<Employee, EmployeeSortState>
     {
         private readonly PostCityContext _context;
         private readonly EmployeeCache _cache;
@@ -152,7 +153,7 @@ namespace PostCity.Controllers
                             transaction.Commit();
                             _cacheUpdater.Update(_cache);
                             _logger.LogInformation($"Add new employee ({employee.FullName})");
-                            return Redirect("/Role/UserList");
+                            return Redirect("/User/Index");
 
                         }
                         else

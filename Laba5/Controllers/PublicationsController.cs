@@ -24,7 +24,7 @@ using System.Data;
 namespace Laba4.Controllers
 {
  
-    public class PublicationsController : Controller
+    public class PublicationsController : Controller, ISortOrderController<Publication, PublicationSortState>
     {
         private readonly PostCityContext _context;
         private readonly PublicationCache _cache;
@@ -145,7 +145,7 @@ namespace Laba4.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Name,Price")] Publication publication)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, TypeId,Name,Price")] Publication publication)
         {
             if (id != publication.Id)
             {
@@ -158,7 +158,7 @@ namespace Laba4.Controllers
                 {
                     _context.Update(publication);
                     await _context.SaveChangesAsync();
-                    _cacheUpdater.Update(_cache);
+                   _cacheUpdater.Update(_cache);
                     _logger.LogInformation($"Edit publication ({publication.Name})");
                 }
                 catch (DbUpdateConcurrencyException)

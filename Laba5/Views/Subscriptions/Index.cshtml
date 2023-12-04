@@ -26,7 +26,6 @@
         document.getElementById("officeNameFilter").value = "";
         document.getElementById("publicationNameFilter").value = "";
         document.getElementById("recipientNameFilter").value = "";
-        document.getElementById("employeeNameFilter").value = "";
         document.getElementById("startPeriodFilter").value = "";
         document.getElementById("endPeriodFilter").value = "";
     }
@@ -67,10 +66,6 @@
                         <div class="mb-2">
                             <label for="recipienNameFilter" class="form-label">Recipient:</label>
                             <input asp-for="@Model.FilterModel.RecipientName" id="recipientNameFilter" name="RecipientName" class="form-control form-control-sm" />
-                        </div>
-                        <div class="mb-2">
-                            <label for="employeeNameFilter" class="form-label">Employee:</label>
-                            <input asp-for="@Model.FilterModel.EmployeeName" id="employeeNameFilter" name="EmployeeName" class="form-control form-control-sm" />
                         </div>
                         <button type="submit" class="btn btn-primary">Apply Filters</button><br />
                         <a href="#" onclick="clearForm()">Clear Fields</a>
@@ -141,7 +136,6 @@
                     </a>
                 </th>
                 <th>Recipient</th>
-                <th>Employee</th>
                 <th><b>Actions</b></th>
             </tr>
         </thead>
@@ -154,7 +148,6 @@
                         <td>@Html.DisplayFor(modelItem => item.Office.StreetName)</td>
                         <td>@Html.DisplayFor(modelItem => item.Publication.Name)</td>
                         <td>@Html.DisplayFor(modelItem => item.Recipient.FullName)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Employee.FullName)</td>
                         <td>
                             <div class="btn-group">
                                     @if (User.IsInRole("Admin"))

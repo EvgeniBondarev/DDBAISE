@@ -19,7 +19,7 @@ using PostCity.Data.Cache;
 namespace Laba4.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class UserController : Controller
+    public class UserController : Controller, ISortOrderController<UserViewModel, UserSortState>
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<PostCityUser> _userManager;
@@ -116,18 +116,6 @@ namespace Laba4.Controllers
             }
             return View(name);
         }
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
-        {
-            IdentityRole role = await _roleManager.FindByIdAsync(id);
-            if (role != null)
-            {
-                IdentityResult result = await _roleManager.DeleteAsync(role);
-
-            }
-            return RedirectToAction("Index");
-        }
-
         [HttpPost]
         public async Task<IActionResult> DeleteUser(string id)
         {

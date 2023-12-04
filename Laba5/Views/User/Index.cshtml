@@ -10,6 +10,7 @@
 @model PageViewModel<UserViewModel, UserFilterModel>
 
 <h2>Users List</h2>
+<a href="/Identity/Account/Create">Create New</a><br />
 <a asp-action="Roles">Roles</a>
 <script>
     function clearForm() {
@@ -73,7 +74,7 @@
                     <tr>
                         <td>@user.Email</td>
                         <td>
-                                @if (user.UserObj != null)
+                                @if (user.UserObj != null && user.Role != "Admin")
                                 {
                                     <p>@user.UserObj.FullName</p>
                                 }

@@ -25,8 +25,7 @@ namespace PostCity.Data.Cache
 
         public override IEnumerable<Subscription> Set()
         {
-            var subscriptions = _db.Subscriptions.Include(s => s.Employee)
-                                                 .Include(s => s.Office)
+            var subscriptions = _db.Subscriptions.Include(s => s.Office)
                                                  .Include(s => s.Publication)
                                                  .Include(s => s.Recipient).ToList();
             _cache.Set("Subscriptions", subscriptions, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(_saveTime)));

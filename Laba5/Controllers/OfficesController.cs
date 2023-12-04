@@ -20,11 +20,12 @@ using Laba4.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using Laba4.Data.Cache;
+using Laba4.Controllers;
 
 namespace PostCity.Controllers
 {
 
-    public class OfficesController : Controller
+    public class OfficesController : Controller, ISortOrderController<Office, OfficeSortState>
     {
         private readonly PostCityContext _context;
         private readonly OfficeCache _cache;

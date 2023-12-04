@@ -33,13 +33,7 @@ namespace PostCity.Models
         [MaxLength(100)]
         [EmailAddress]
         public string Email { get; set; }
-
-        [InverseProperty("Office")]
-        [CascadeDelete]
         public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
-
-        [InverseProperty("Office")]
-        [CascadeDelete]
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }

@@ -317,7 +317,6 @@ namespace Laba4.Data
                             Publication = randomPublication,
                             Duration = duration,
                             Office = randomOffice,
-                            Employee = randomEmployee,
                             SubscriptionStartDate = startDate
                         });
                     }

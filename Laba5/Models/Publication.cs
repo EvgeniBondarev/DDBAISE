@@ -17,12 +17,8 @@ namespace PostCity.Models
         [Required]
         [Column(TypeName = "decimal(6, 2)")]
         public decimal Price { get; set; }
-
-        [InverseProperty("Publication")]
-        [CascadeDelete]
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
-        [ForeignKey("TypeId")]
         public virtual PublicationType? Type { get; set; } = null!;
         public override string ToString()
         {

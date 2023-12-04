@@ -16,9 +16,6 @@ namespace PostCity.Models
         public int House { get; set; }
 
         public int Apartment { get; set; }
-
-        [InverseProperty("Address")]
-        [CascadeDelete]
         public virtual ICollection<Recipient> Recipients { get; set; } = new List<Recipient>();
 
         public string FulAddress

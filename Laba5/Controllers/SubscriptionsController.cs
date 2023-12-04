@@ -18,11 +18,12 @@ using Laba4.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using Newtonsoft.Json.Linq;
+using Laba4.Controllers;
 
 namespace PostCity.Controllers
 {
     
-    public class SubscriptionsController : Controller
+    public class SubscriptionsController : Controller, ISortOrderController<Subscription, SubscriptionSortState>
     {
         private readonly PostCityContext _context;
         private readonly SubscriptionCache _cache;
@@ -75,7 +76,6 @@ namespace PostCity.Controllers
             data = _filter.FilterByString(data, pn => pn.Office.StreetName, filterData.OfficeName);
             data = _filter.FilterByString(data, pn => pn.Publication.Name, filterData.PublicationName);
             data = _filter.FilterByString(data, pn => pn.Recipient.FullName, filterData.RecipientName);
-            data = _filter.FilterByString(data, pn => pn.Employee.FullName, filterData.EmployeeName);
             data = _filter.FilterByPeriod(data, pn => pn.SubscriptionStartDate, filterData.StartPeriod, filterData.EndPeriod);
 
             var publicationPriceSum = data.Sum(subscription => subscription.Publication.Price);
@@ -141,7 +141,7 @@ namespace PostCity.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,RecipientId,PublicationId,Duration,OfficeId,EmployeeId,SubscriptionStartDate")] Subscription subscription)
+        public async Task<IActionResult> Create([Bind("Id,RecipientId,PublicationId,Duration,OfficeId,SubscriptionStartDate")] Subscription subscription)
         {
             if (ModelState.IsValid)
             {
@@ -151,7 +151,6 @@ namespace PostCity.Controllers
                 _logger.LogInformation($"Add new subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", subscription.EmployeeId);
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", subscription.OfficeId);
             ViewData["PublicationId"] = new SelectList(_context.Publications, "Id", "Name", subscription.PublicationId);
             ViewData["RecipientId"] = new SelectList(_context.Recipients, "Id", "FullName", subscription.RecipientId);
@@ -172,7 +171,6 @@ namespace PostCity.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", subscription.EmployeeId);
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", subscription.OfficeId);
             ViewData["PublicationId"] = new SelectList(_context.Publications, "Id", "Name", subscription.PublicationId);
             ViewData["RecipientId"] = new SelectList(_context.Recipients, "Id", "FullName", subscription.RecipientId);
@@ -183,7 +181,7 @@ namespace PostCity.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RecipientId,PublicationId,Duration,OfficeId,EmployeeId,SubscriptionStartDate")] Subscription subscription)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RecipientId,PublicationId,Duration,OfficeId,SubscriptionStartDate")] Subscription subscription)
         {
             if (id != subscription.Id)
             {
@@ -212,7 +210,6 @@ namespace PostCity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Name", subscription.EmployeeId);
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", subscription.OfficeId);
             ViewData["PublicationId"] = new SelectList(_context.Publications, "Id", "Name", subscription.PublicationId);
             ViewData["RecipientId"] = new SelectList(_context.Recipients, "Id", "Email", subscription.RecipientId);
