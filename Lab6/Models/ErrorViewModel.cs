@@ -1,4 +1,4 @@
-namespace PostCity.Models
+namespace Laba4.Models
 {
     public class ErrorViewModel
     {

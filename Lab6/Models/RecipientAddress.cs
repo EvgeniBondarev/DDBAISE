@@ -1,29 +1,18 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace PostCity.Models
+namespace Laba4.Models;
+
+public partial class RecipientAddress
 {
-    public class RecipientAddress
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(255)]
-        public string Street { get; set; }
+    public string? Street { get; set; }
 
-        [Required]
-        public int House { get; set; }
+    public int? House { get; set; }
 
-        public int Apartment { get; set; }
-
-        [InverseProperty("Address")]
-        [CascadeDelete]
-        public virtual ICollection<Recipient> Recipients { get; set; } = new List<Recipient>();
-
-        public string FulAddress
-        {
-            get { return $"{Street} д.{House} кв.{Apartment}"; }
-        }
-    }
+    public int? Apartment { get; set; }
+    [JsonIgnore]
+    public virtual ICollection<Recipient> Recipients { get; set; } = new List<Recipient>();
 }

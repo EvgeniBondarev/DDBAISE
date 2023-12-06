@@ -1,45 +1,26 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace PostCity.Models
+namespace Laba4.Models;
+
+public partial class Office
 {
-    public class Office
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string OwnerName { get; set; }
+    public string OwnerName { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
-        public string OwnerMiddlename { get; set; }
+    public string OwnerMiddlename { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
-        public string OwnerSurname { get; set; }
+    public string OwnerSurname { get; set; } = null!;
 
-        [Required]
-        [MaxLength(100)]
-        public string StreetName { get; set; }
+    public string StreetName { get; set; } = null!;
 
-        [Required]
-        [MaxLength(15)]
-        [Phone]
-        public string MobilePhone { get; set; }
+    public string MobilePhone { get; set; } = null!;
 
-        [Required]
-        [MaxLength(100)]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [InverseProperty("Office")]
-        [CascadeDelete]
-        public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
-
-        [InverseProperty("Office")]
-        [CascadeDelete]
-        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-    }
+    public string Email { get; set; } = null!;
+    [JsonIgnore]
+    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+    [JsonIgnore]
+    public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }

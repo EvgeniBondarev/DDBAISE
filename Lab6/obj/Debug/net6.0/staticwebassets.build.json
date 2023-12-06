@@ -1,11 +1,37 @@
 {
   "Version": 1,
-  "Hash": "ICedit/mSqeD7HPUbxqTQ2DviNasLwUGofDeWF563hE=",
+  "Hash": "3XmdPRNnQGlQ8YnLLZubOnYihbTdzGde1Oah5Q7DuyU=",
   "Source": "Lab6",
   "BasePath": "_content/Lab6",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "Lab6\\wwwroot",
+      "Source": "Lab6",
+      "ContentRoot": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\Lab6\\wwwroot\\",
+      "BasePath": "_content/Lab6",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\Lab6\\wwwroot\\client.html",
+      "SourceId": "Lab6",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\Lab6\\wwwroot\\",
+      "BasePath": "_content/Lab6",
+      "RelativePath": "client.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\client.html"
+    }
+  ]
 }

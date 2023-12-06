@@ -1,48 +1,23 @@
-﻿using Laba4.Models;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PostCity.Models
+namespace Laba4.Models;
+
+public partial class Employee
 {
-    public class Employee
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
-        public string Middlename { get; set; }
+    public string Middlename { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
-        public string Surname { get; set; }
+    public string Surname { get; set; } = null!;
 
-        public int PositionId { get; set; }
+    public int PositionId { get; set; }
 
-        public int OfficeId { get; set; }
+    public int OfficeId { get; set; }
 
-        [ForeignKey("OfficeId")]
-        public Office? Office { get; set; }
+   // public Office Office { get; set; } = null!;
 
-        [ForeignKey("PositionId")]
-        public EmployeePosition? Position { get; set; }
-
-        [InverseProperty("Employee")]
-        [CascadeDelete]
-        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-
-        public override string ToString()
-        {
-            return $"{Surname} {Name}";
-        }
-
-        public string FullName
-        {
-            get { return $"{Surname} {Name} {Middlename}"; }
-        }
-    }
+    public EmployeePosition Position { get; set; } = null!;
 }

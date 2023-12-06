@@ -3,18 +3,28 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string? connection = builder.Configuration.GetConnectionString("SqlServerConnection");
-builder.Services.AddDbContext<PostCityContext>(options => options.UseSqlServer(connection));
-// Add services to the container.
+string connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
+builder.Services.AddDbContext<SubsCityContext>(option => option.UseSqlServer(connectionString));
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder
+            .AllowAnyOrigin()  // ¬ реальном применении уточните конкретные источники, которые разрешены.
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCors("AllowSpecificOrigin");
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,7 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
-
+app.UseDefaultFiles();
 app.MapControllers();
-
+app.UseStaticFiles();
 app.Run();

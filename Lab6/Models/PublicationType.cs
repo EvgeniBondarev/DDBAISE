@@ -1,19 +1,14 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace PostCity.Models
+namespace Laba4.Models;
+
+public partial class PublicationType
 {
-    public class PublicationType
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string Type { get; set; } = null!;
-
-        [InverseProperty("Type")]
-        [CascadeDelete]
-        public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
-    }
+    public string Type { get; set; } = null!;
+    [JsonIgnore]
+    public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
 }

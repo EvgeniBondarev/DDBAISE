@@ -1,19 +1,14 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-namespace PostCity.Models
+namespace Laba4.Models;
+
+public partial class EmployeePosition
 {
-    public class EmployeePosition
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string? Position { get; set; }
-
-        [InverseProperty("Position")]
-        [CascadeDelete]
-        public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
-    }
+    public string? Position { get; set; }
+    [JsonIgnore]
+    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
 }

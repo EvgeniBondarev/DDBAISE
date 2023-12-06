@@ -1,48 +1,26 @@
-﻿using Laba4.Models;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
-namespace PostCity.Models
+namespace Laba4.Models;
+
+public partial class Recipient
 {
-    public class Recipient 
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
-        public string Middlename { get; set; }
+    public string Middlename { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
-        public string Surname { get; set; }
+    public string Surname { get; set; } = null!;
 
-        public int? AddressId { get; set; }
+    public int AddressId { get; set; }
 
-        [Required]
-        [MaxLength(15)]
-        [Phone]
-        public string MobilePhone { get; set; }
+    public string MobilePhone { get; set; } = null!;
 
-        [ForeignKey("AddressId")]
-        public virtual RecipientAddress? Address { get; set; }
+    public string Email { get; set; } = null!;
 
-        [InverseProperty("Recipient")]
-        [CascadeDelete]
-        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
-
-        public override string ToString()
-        {
-            return $"{Surname} {Name}";
-        }
-
-        public string FullName
-        {
-            get { return $"{Surname} {Name} {Middlename}"; }
-        }
-    }
+    public virtual RecipientAddress Address { get; set; } = null!;
+    [JsonIgnore]
+    public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscriptions Table</title>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #idInput {
+            margin-bottom: 10px;
+        }
+
+        #getRecordButton,
+        #addRecordButton {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        #addRecordForm,
+        #updateRecordForm {
+            margin-bottom: 20px;
+        }
+
+        .updateButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .deleteButton {
+            background-color: #fd0000;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <label for="idInput">Enter Record ID: </label>
+        <input type="text" id="idInput">
+        <button id="getRecordButton" onclick="getRecord()">Get Record</button>
+    </div>
+
+    <div id="addRecordForm">
+        <h2>Add or Update Record</h2>
+        <form id="subscriptionForm">
+            <label for="recipientId">Recipient ID: </label>
+            <input type="text" id="recipientId" name="recipientId" required><br>
+
+            <!-- Добавьте другие поля формы сюда, если есть -->
+
+            <button type="button" id="addOrUpdateRecordButton" onclick="addOrUpdateRecord()">Add or Update Record</button>
+        </form>
+    </div>
+
+    <table id="subscriptionsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Recipient ID</th>
+                <th>Publication ID</th>
+                <th>Duration</th>
+                <th>Office ID</th>
+                <th>Employee ID</th>
+                <th>Subscription Start Date</th>
+                <th>Publication Name</th>
+                <th>Publication Price</th>
+                <th>Employee Name</th>
+                <th>Employee Position</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be populated dynamically using JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        function populateTable(data) {
+            const tableBody = document.querySelector('#subscriptionsTable tbody');
+            tableBody.innerHTML = '';
+
+            data.forEach(subscription => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subscription.id}</td>
+                    <td>${subscription.recipientId}</td>
+                    <td>${subscription.publicationId}</td>
+                    <td>${subscription.duration}</td>
+                    <td>${subscription.officeId}</td>
+                    <td>${subscription.employeeId}</td>
+                    <td>${subscription.subscriptionStartDate}</td>
+                    <td>${subscription.publication.name}</td>
+                    <td>${subscription.publication.price}</td>
+                    <td>${subscription.employee.name}</td>
+                    <td>${subscription.employee.position.position}</td>
+                    <td>
+                        <button class="updateButton" onclick="updateRecord(${subscription.id})">Update</button>
+                        <button class="deleteButton" onclick="deleteRecord(${subscription.id})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        window.onload = function () {
+            fetch('https://localhost:7164/SubsCity')
+                .then(response => response.json())
+                .then(data => {
+                    populateTable(data);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        };
+
+        function getRecord() {
+            const idInput = document.getElementById('idInput').value;
+
+            if (!isNaN(idInput)) {
+                fetch(`https://localhost:7164/SubsCity/${idInput}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('recipientId').value = data.recipientId;
+                        // Set values for other fields as well
+
+                        document.getElementById('addRecordForm').style.display = 'block';
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            } else {
+                fetch('https://localhost:7164/SubsCity')
+                    .then(response => response.json())
+                    .then(data => {
+                        populateTable(data);
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+        }
+
+        function updateRecord(id) {
+            document.getElementById('idInput').value = id;
+            getRecord();
+        }
+
+        function addOrUpdateRecord() {
+            const recipientId = document.getElementById('recipientId').value;
+            const publicationId = document.getElementById('publicationId').value;
+            const duration = document.getElementById('duration').value;
+            const officeId = document.getElementById('officeId').value;
+            const employeeId = document.getElementById('employeeId').value;
+            const subscriptionStartDate = document.getElementById('subscriptionStartDate').value;
+
+            const data = {
+                recipientId: parseInt(recipientId),
+                publicationId: parseInt(publicationId),
+                duration: parseInt(duration),
+                officeId: parseInt(officeId),
+                employeeId: parseInt(employeeId),
+                subscriptionStartDate: subscriptionStartDate
+            };
+
+            const idInput = document.getElementById('idInput').value;
+            const isUpdate = !isNaN(idInput);
+            const url = isUpdate ? `https://localhost:7164/SubsCity/${idInput}` : 'https://localhost:7164/SubsCity';
+
+            fetch(url, {
+                    method: isUpdate ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log(`Subscription ${isUpdate ? 'updated' : 'added'} successfully:`, result);
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error(`Error ${isUpdate ? 'updating' : 'adding'} subscription:`, error);
+                });
+        }
+
+        function deleteRecord(id) {
+            if (confirm("Are you sure you want to delete this record?")) {
+                fetch(`https://localhost:7164/SubsCity/${id}`, {
+                        method: 'DELETE',
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log('Subscription deleted successfully:', result);
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error deleting subscription:', error);
+                    });
+            }
+        }
+    </script>
+</body>
+
+</html>
