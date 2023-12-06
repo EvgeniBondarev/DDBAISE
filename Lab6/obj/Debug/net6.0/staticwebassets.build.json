@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "3XmdPRNnQGlQ8YnLLZubOnYihbTdzGde1Oah5Q7DuyU=",
+  "Hash": "UQuUXzqNt8pWWKmQFJsKEJfWLn1k6jrlO3C6i3o03dA=",
   "Source": "Lab6",
   "BasePath": "_content/Lab6",
   "Mode": "Default",
@@ -15,23 +15,5 @@
       "Pattern": "**"
     }
   ],
-  "Assets": [
-    {
-      "Identity": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\Lab6\\wwwroot\\client.html",
-      "SourceId": "Lab6",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\Evgeni\\Desktop\\labs\\C#\\Lab6\\wwwroot\\",
-      "BasePath": "_content/Lab6",
-      "RelativePath": "client.html",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\client.html"
-    }
-  ]
+  "Assets": []
 }
