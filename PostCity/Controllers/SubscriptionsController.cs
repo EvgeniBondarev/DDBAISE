@@ -14,26 +14,34 @@ using PostCity.ViewModels.Sort;
 using PostCity.Infrastructure.Filters;
 using Newtonsoft.Json;
 using PostCity.Data.Cookies;
+using Laba4.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Newtonsoft.Json.Linq;
+using Laba4.Controllers;
 
 namespace PostCity.Controllers
 {
-
-    public class SubscriptionsController : Controller
+    
+    public class SubscriptionsController : Controller, ISortOrderController<Subscription, SubscriptionSortState>
     {
         private readonly PostCityContext _context;
         private readonly SubscriptionCache _cache;
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Subscription> _filter;
+        private readonly SessionLogger _logger;
 
         public SubscriptionsController(PostCityContext context,
                                        SubscriptionCache cache,
                                        CookiesManeger cookiesManeger,
-                                       FilterBy<Subscription> filter)
+                                       FilterBy<Subscription> filter,
+                                       SessionLogger logger)
         {
             _context = context;
             _cache = cache;
             _cookies = cookiesManeger;
             _filter = filter;
+            _logger = logger;
         }
 
         // GET: Subscriptions
@@ -47,17 +55,13 @@ namespace PostCity.Controllers
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder);
 
-            int pageSize = 15;
-            _cache.Set(postCityContext);
-            var count = postCityContext.Count();
-            var items = postCityContext.Skip((page - 1) * pageSize).Take(pageSize);
+            
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            SubscriptionIndexViewModel viewModel = new SubscriptionIndexViewModel(items, pageViewModel)
-            {
-                SubscriptionFilter = filterData
-            };
-            return View(viewModel);
+            int pageSize = 10;
+            _cache.Set(postCityContext);
+
+            var pageViewModel = new PageViewModel<Subscription, SubscriptionFilterModel>(postCityContext, page, pageSize, filterData);
+            return View(pageViewModel);
         }
         [HttpPost]
         public async Task<IActionResult> Index(SubscriptionFilterModel filterData, int page = 1)
@@ -65,29 +69,49 @@ namespace PostCity.Controllers
             _cache.Update();
             _cookies.SaveToCookies(Response.Cookies, "SubscriptionFilterData", filterData);
 
-            var data = _cache.Get();
+            IEnumerable<Subscription> data = _cache.Get();
 
             data = _filter.FilterByInt(data, d => d.Duration, filterData.Duration);
             data = _filter.FilterByDate(data, sb => sb.SubscriptionStartDate, filterData.StartDate);
             data = _filter.FilterByString(data, pn => pn.Office.StreetName, filterData.OfficeName);
             data = _filter.FilterByString(data, pn => pn.Publication.Name, filterData.PublicationName);
-            data = _filter.FilterByString(data, pn => pn.Recipient.Email, filterData.RecipientEmail);
-            data = _filter.FilterByString(data, pn => pn.Employee.Name, filterData.EmployeeName);
+            data = _filter.FilterByString(data, pn => pn.Recipient.FullName, filterData.RecipientName);
+            data = _filter.FilterByPeriod(data, pn => pn.SubscriptionStartDate, filterData.StartPeriod, filterData.EndPeriod);
 
-            int pageSize = 15;
+            var publicationPriceSum = data.Sum(subscription => subscription.Publication.Price);
+
+            int pageSize = 10;
             _cache.Set(data);
-            var count = data.Count();
-            var items = data.Skip((page - 1) * pageSize).Take(pageSize);
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            SubscriptionIndexViewModel viewModel = new SubscriptionIndexViewModel(items, pageViewModel)
-            {
-                SubscriptionFilter = filterData
-            };
+            var pageViewModel = new PageViewModel<Subscription, SubscriptionFilterModel>(data, page, pageSize, filterData);
 
-            return View(viewModel);
+            pageViewModel.Info = GetInfo(filterData, publicationPriceSum);
+
+            return View(pageViewModel);
         }
-        // GET: Subscriptions/Details/5
+        public string GetInfo(SubscriptionFilterModel filterData, decimal publicationPriceSum)
+        {
+            string info = "Total publication price ";
+            if(filterData.StartPeriod != null && filterData.EndPeriod != null)
+            {
+                info += $"for the period from {filterData.StartPeriod.Value.ToString("dd.MM.yyyy")} to {filterData.EndPeriod.Value.ToString("dd.MM.yyyy")} ";
+            }
+            else if(filterData.StartPeriod != null && filterData.EndPeriod == null)
+            {
+                info += $"starting from {filterData.StartPeriod.Value.ToString("dd.MM.yyyy")} ";
+            }
+            else if (filterData.StartPeriod == null && filterData.EndPeriod != null)
+            {
+                info += $"ending from {filterData.EndPeriod.Value.ToString("dd.MM.yyyy")} ";
+            }
+            info += $"is {publicationPriceSum} руб ";
+            if(filterData.OfficeName != null)
+            {
+                info += $"for an office '{filterData.OfficeName}'";
+            }
+            info += ".";
+            return info;
+        }
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Subscriptions == null)
@@ -104,7 +128,7 @@ namespace PostCity.Controllers
             return View(subscription);
         }
 
-        // GET: Subscriptions/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName");
@@ -114,29 +138,27 @@ namespace PostCity.Controllers
             return View();
         }
 
-        // POST: Subscriptions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ServiceFilter(typeof(DatabaseSaveFilter))]
-        public async Task<IActionResult> Create([Bind("Id,RecipientId,PublicationId,Duration,OfficeId,EmployeeId,SubscriptionStartDate")] Subscription subscription)
+        public async Task<IActionResult> Create([Bind("Id,RecipientId,PublicationId,Duration,OfficeId,SubscriptionStartDate")] Subscription subscription)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(subscription);
                 await _context.SaveChangesAsync();
                 _cache.Update();
+                _logger.LogInformation($"Add new subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", subscription.EmployeeId);
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", subscription.OfficeId);
             ViewData["PublicationId"] = new SelectList(_context.Publications, "Id", "Name", subscription.PublicationId);
             ViewData["RecipientId"] = new SelectList(_context.Recipients, "Id", "FullName", subscription.RecipientId);
             return View(subscription);
         }
 
-        // GET: Subscriptions/Edit/5
+        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Subscriptions == null)
@@ -149,20 +171,17 @@ namespace PostCity.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "FullName", subscription.EmployeeId);
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", subscription.OfficeId);
             ViewData["PublicationId"] = new SelectList(_context.Publications, "Id", "Name", subscription.PublicationId);
             ViewData["RecipientId"] = new SelectList(_context.Recipients, "Id", "FullName", subscription.RecipientId);
             return View(subscription);
         }
 
-        // POST: Subscriptions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ServiceFilter(typeof(DatabaseSaveFilter))]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RecipientId,PublicationId,Duration,OfficeId,EmployeeId,SubscriptionStartDate")] Subscription subscription)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RecipientId,PublicationId,Duration,OfficeId,SubscriptionStartDate")] Subscription subscription)
         {
             if (id != subscription.Id)
             {
@@ -176,6 +195,7 @@ namespace PostCity.Controllers
                     _context.Update(subscription);
                     await _context.SaveChangesAsync();
                     _cache.Update();
+                    _logger.LogInformation($"Edit subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -190,14 +210,13 @@ namespace PostCity.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Name", subscription.EmployeeId);
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", subscription.OfficeId);
             ViewData["PublicationId"] = new SelectList(_context.Publications, "Id", "Name", subscription.PublicationId);
             ViewData["RecipientId"] = new SelectList(_context.Recipients, "Id", "Email", subscription.RecipientId);
             return View(subscription);
         }
 
-        // GET: Subscriptions/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Subscriptions == null)
@@ -205,12 +224,7 @@ namespace PostCity.Controllers
                 return NotFound();
             }
 
-            var subscription = await _context.Subscriptions
-                .Include(s => s.Employee)
-                .Include(s => s.Office)
-                .Include(s => s.Publication)
-                .Include(s => s.Recipient)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var subscription = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (subscription == null)
             {
                 return NotFound();
@@ -219,7 +233,7 @@ namespace PostCity.Controllers
             return View(subscription);
         }
 
-        // POST: Subscriptions/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -228,13 +242,16 @@ namespace PostCity.Controllers
             {
                 return Problem("Entity set 'PostCityContext.Subscriptions'  is null.");
             }
-            var subscription = await _context.Subscriptions.FindAsync(id);
+            var subscription = await _context.Subscriptions.Include(s => s.Publication).FirstOrDefaultAsync(s => s.Id == id);
             if (subscription != null)
             {
+                _logger.LogInformation($"Delete subscription ({subscription.Publication.Name} / {subscription.Duration} мес.)");
                 _context.Subscriptions.Remove(subscription);
+               
             }
 
             await _context.SaveChangesAsync();
+            _cache.Update();
             return RedirectToAction(nameof(Index));
         }
 

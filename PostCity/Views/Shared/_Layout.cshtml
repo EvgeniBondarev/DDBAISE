@@ -3,51 +3,141 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PostSity</title>
+    <title>@ViewData["Title"] - PostCity</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PostSity.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            margin-left: 7%;
+            margin-right: 7%;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PostSity</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-mailbox-flag" viewBox="0 0 16 16">
+                              <path d="M10.5 8.5V3.707l.854-.853A.5.5 0 0 0 11.5 2.5v-2A.5.5 0 0 0 11 0H9.5a.5.5 0 0 0-.5.5v8zM5 7c0 .334-.164.264-.415.157C4.42 7.087 4.218 7 4 7c-.218 0-.42.086-.585.157C3.164 7.264 3 7.334 3 7a1 1 0 0 1 2 0"/>
+                              <path d="M4 3h4v1H6.646A3.99 3.99 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3V3a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3"/>
+                    </svg>
+                    PostCity</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                           <div class="btn-group">
+                                <button type="button" class="btn btn-defult"><a class="nav-link text-dark" asp-area="" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a></button>
+                                <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                @if( User.IsInRole("Admin")){
+                                     <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Publications" asp-action="Index">Publications</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Recipients" asp-action="Index">Recipients</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Offices" asp-action="Index">Offices</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Subscriptions" asp-action="Create">Create New</a></li>
+                                    </ul>
+                                }
+                            </div>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-defult"><a class="nav-link text-dark" asp-area="" asp-controller="Publications" asp-action="Index">Publications</a></button>
+                                <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                @if(User.IsInRole("Admin")){
+                                     <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="PublicationTypes" asp-action="Index">Publication Types</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Publications" asp-action="Create">Create New</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="PublicationTypes" asp-action="Create">Create New Type</a></li>
+                                    </ul>
+                                }
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Offices" asp-action="Index">Offices</a>
-                        </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+
+                                <li class="nav-item">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-defult"><a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></button>
+                                        <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="visually-hidden">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="Offices" asp-action="Index">Offices</a></li>
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="EmployeePositions" asp-action="Index">Employee Positions</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item"  href="/Identity/Account/Create">Create New</a></li>
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="EmployeePositions" asp-action="Create">Create New Positions</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-defult"><a class="nav-link text-dark" asp-area="" asp-controller="Offices" asp-action="Index">Offices</a></button>
+                                        <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="visually-hidden">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></li>
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item"  asp-area="" asp-controller="Offices" asp-action="Create">Create New</a>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-defult"><a class="nav-link text-dark" asp-area="" asp-controller="Recipients" asp-action="Index">Recipients</a></button>
+                                        <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="visually-hidden">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="Subscriptions" asp-action="Index">Subscriptions</a>
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="RecipientAddresses" asp-action="Index">Recipient Addresses</a>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-defult"><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Users</a></button>
+                                        <button type="button" class="btn btn-defult dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="visually-hidden">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="Employees" asp-action="Index">Employees</a></li>
+                                            <li><a class="dropdown-item" asp-area="" asp-controller="Recipients" asp-action="Index">Recipients</a></li>
+                                            <li><a class="dropdown-item" asp-controller="User" asp-action="Roles">Roles</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item"  href="/Identity/Account/Create">Create New</a></li>
+                                            <li><a class="dropdown-item"  asp-area="" asp-controller="User" asp-action="Create">Create New Role</a>
+                                        </ul>
+                                    </div>
+                                </li>
+                        }
                     </ul>
                 </div>
             </div>
+            <partial name="_LoginPartial" />
         </nav>
-
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container-fluid p-0">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - PostSity - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

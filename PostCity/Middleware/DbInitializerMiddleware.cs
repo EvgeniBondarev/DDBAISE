@@ -1,7 +1,8 @@
-﻿using PostCity.Data;
-using PostCity.Data.Initializer;
+﻿using Laba4.Data;
+using Laba4.Models;
+using Microsoft.AspNetCore.Identity;
 
-namespace PostCity.Middleware
+namespace Laba4.Middleware
 {
     public class DbInitializerMiddleware
     {
@@ -9,20 +10,22 @@ namespace PostCity.Middleware
 
         public DbInitializerMiddleware(RequestDelegate next)
         {
-            _next = next;
+                _next = next;
+
         }
 
-        public Task Invoke(HttpContext httpContext, PostCityContext db)
+        public Task Invoke(HttpContext httpContext, PostCityContext db, 
+                           RoleManager<IdentityRole> roleManager, UserManager<PostCityUser> userManager)
         {
-            if (!(httpContext.Session.Keys.Contains("starting")))
-            {
-                DbInitializer dbInitializer = new DbInitializer(db);
-                dbInitializer.InitializeDb();
+                if (!(httpContext.Session.Keys.Contains("starting")))
+                {
+                    DbInitializer dbInitializer = new DbInitializer(db, roleManager, userManager);
+                    dbInitializer.InitializeDb();
 
-                httpContext.Session.SetString("starting", "Yes");
-            }
-            return _next.Invoke(httpContext);
-
+                    httpContext.Session.SetString("starting", "Yes");
+                }
+                return _next.Invoke(httpContext);
+            
         }
     }
     public static class DbInitializerMiddlewareExtensions
@@ -32,4 +35,5 @@ namespace PostCity.Middleware
             return builder.UseMiddleware<DbInitializerMiddleware>();
         }
     }
+
 }

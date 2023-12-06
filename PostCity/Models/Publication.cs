@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,10 +17,13 @@ namespace PostCity.Models
         [Required]
         [Column(TypeName = "decimal(6, 2)")]
         public decimal Price { get; set; }
-
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
-        [ForeignKey("TypeId")]
-        public virtual PublicationType Type { get; set; } = null!;
+        public virtual PublicationType? Type { get; set; } = null!;
+        public override string ToString()
+        {
+            return $"{Name}\t{Type.Type}\t{Price} руб.";
+
+        }
     }
 }

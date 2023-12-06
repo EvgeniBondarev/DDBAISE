@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Laba4.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PostCity.Models;
-using System.Data.Entity;
+
 
 namespace PostCity.Data.Cache
 {

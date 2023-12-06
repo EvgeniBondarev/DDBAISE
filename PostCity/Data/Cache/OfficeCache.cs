@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Laba4.Models;
+using Microsoft.Extensions.Caching.Memory;
 using PostCity.Models;
 
 namespace PostCity.Data.Cache

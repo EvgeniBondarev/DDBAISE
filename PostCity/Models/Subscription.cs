@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PostCity.Models
 {
@@ -13,13 +15,11 @@ namespace PostCity.Models
         public int PublicationId { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue)] 
+        [Range(1, int.MaxValue)]
         public int Duration { get; set; }
 
         [Required]
         public int OfficeId { get; set; }
-
-        public int? EmployeeId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -28,6 +28,5 @@ namespace PostCity.Models
         public Office? Office { get; set; } = null!;
         public Publication? Publication { get; set; } = null!;
         public Recipient? Recipient { get; set; } = null!;
-        public Employee? Employee { get; set; }
     }
 }

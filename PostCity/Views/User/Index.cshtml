@@ -1,0 +1,134 @@
+﻿@using Laba4.Models
+@using Laba4.ViewModels
+@using Laba4.ViewModels.Filters.FilterModel
+@using Laba4.ViewModels.Sort
+@using Microsoft.AspNetCore.Identity
+@using PostCity.ViewModels
+@using PostCity.ViewModels.Sort
+
+
+@model PageViewModel<UserViewModel, UserFilterModel>
+
+<h2>Users List</h2>
+<a href="/Identity/Account/Create">Create New</a><br />
+<a asp-action="Roles">Roles</a>
+<script>
+    function clearForm() {
+        document.getElementById("nameFilter").value = "";
+        document.getElementById("emailFilter").value = "";
+        document.getElementById("roleFilter").value = "";
+    }
+</script>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Filters
+                </div>
+               <div class="card-body">
+                    <form asp-action="Index" method="post">
+                        <div class="mb-2">
+                            <label for="emailFilter" class="form-label">Email:</label>
+                            <input asp-for="@Model.FilterModel.Email" id="emailFilter" name="Email" class="form-control form-control-sm"/><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="nameFilter" class="form-label">Name:</label>
+                            <input asp-for="@Model.FilterModel.Name" id="nameFilter" name="Name" class="form-control form-control-sm" min="0" /><br />
+                        </div>
+                        <div class="mb-2">
+                            <label for="roleFilter" class="form-label">Role:</label>
+                            <input asp-for="@Model.FilterModel.Role" id="roleFilter" name="Role" class="form-control form-control-sm" /><br />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button><br />
+                        <a href="#" onclick="clearForm()">Clear Fields</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th><b>Email</b></th>
+                <th><b>Full Name</b></th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.RoleSort">
+                                @if (ViewBag.RoleSort == UserSortState.RoleAsc)
+                                {
+                                    <b>Role ↑</b>
+                                }
+                                else
+                                {
+                                    <b>Role ↓</b>
+                                }
+                    </a>
+                </th>
+                <th><b>Actions</b></th>
+            </tr>
+        </thead>
+        <tbody>
+                    @foreach (var user in Model.Items)
+                    {
+                    <tr>
+                        <td>@user.Email</td>
+                        <td>
+                                @if (user.UserObj != null && user.Role != "Admin")
+                                {
+                                    <p>@user.UserObj.FullName</p>
+                                }
+                        </td>
+                        <td>@user.Role</td>
+                        <td>
+                            <div class="btn-group">
+                                @{
+                                    if (user.Role == "Recipient")
+                                    {
+                                        <a class="btn btn-primary" asp-controller="Recipients" asp-action="Edit" asp-route-id="@user.UserObj.Id">Edit</a>
+                                        <a class="btn btn-primary" asp-controller="Recipients" asp-action="Details" asp-route-id="@user.UserObj.Id">Details</a>
+                                    }
+                                    else if (user.Role == "Employee")
+                                    {
+                                        <a class="btn btn-primary" asp-controller="Employees" asp-action="Edit" asp-route-id="@user.UserObj.Id">Edit</a>
+                                        <a class="btn btn-primary" asp-controller="Employees" asp-action="Details" asp-route-id="@user.UserObj.Id">Details</a>
+                                    }
+                                }
+                                @{
+                                    if (user.Role != "Admin")
+                                    {
+                                        <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post">
+                                            <button type="submit"  class="btn btn-primary" onclick="Are you sure you want to delete this user?">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    }
+        </tbody>
+    </table>
+    <p>
+                @if (Model.HasPreviousPage)
+                {
+                                <a asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                                    </svg>
+                            </a>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                                <a asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                                    </svg>
+                            </a>
+                }
+     </p>
+</div>
+
+</div>

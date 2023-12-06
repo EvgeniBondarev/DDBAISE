@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Laba4.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PostCity.Models
 {
-    public class Recipient
+    public class Recipient : IUser
     {
         public int Id { get; set; }
 
@@ -16,30 +18,24 @@ namespace PostCity.Models
         public string Middlename { get; set; }
 
         [Required]
-        [MaxLength(50)] 
+        [MaxLength(50)]
         public string Surname { get; set; }
 
-        public int AddressId { get; set; }
+        public int? AddressId { get; set; }
 
         [Required]
-        [MaxLength(15)] 
-        [Phone] 
+        [MaxLength(15)]
+        [Phone]
         public string MobilePhone { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [ForeignKey("AddressId")]
-        public virtual RecipientAddress Address { get; set; }
-
+        public virtual RecipientAddress? Address { get; set; }
         public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
         public override string ToString()
         {
             return $"{Surname} {Name}";
         }
+
         public string FullName
         {
             get { return $"{Surname} {Name} {Middlename}"; }

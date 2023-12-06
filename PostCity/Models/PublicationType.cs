@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PostCity.Models
 {
@@ -9,7 +11,6 @@ namespace PostCity.Models
         [Required]
         [MaxLength(100)]
         public string Type { get; set; } = null!;
-
         public virtual ICollection<Publication> Publications { get; set; } = new List<Publication>();
     }
 }

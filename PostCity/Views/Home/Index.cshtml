@@ -1,8 +1,45 @@
-﻿@{
+﻿@using Laba4.Models
+@{
     ViewData["Title"] = "Home Page";
 }
+@model List<string>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-left">
+    @if (@ViewData["Email"]!= null)
+    {
+            <h2>Hello @ViewData["Email"].</h2>
+            <h3>Role: @ViewData["Role"]</h3>
+
+        @if (ViewData["Role"].ToString() == "Recipient")
+        {
+                    <h3>User: @ViewData["Name"]</h3>
+                    <h3>Phone: @ViewData["Phone"]</h3>
+        }
+        else if (ViewData["Role"].ToString() == "Employee")
+        {
+                    <h3>User: @ViewData["Name"]</h3>
+                    <h3>Office: @ViewData["Office"]</h3>
+                    <h3>Position: @ViewData["Position"]</h3>
+        }
+        else if (ViewData["Role"].ToString() == "Admin")
+        {
+            <div class="border mt-3 p-2" style="max-height: 500px; overflow-y: auto;">
+                <h4>Logs:</h4>
+                <ul class="list-unstyled">
+                    @foreach (var log in Model)
+                    {
+                        <li>@log</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+    else
+    {
+         <p>Приложение "PostCity" предназначено для удобного управления и контроля процесса подписки<br>
+          на различные издания (газеты, журналы) среди городских жителей.</p>
+
+        <p>Приложение позволяет эффективно управлять процессом подписки, следить за актуальной информацией об изданиях, получателях, почтовых отделениях,<br>
+           а также обеспечивает контроль над сроками подписки и организацией доставки изданий.</p><br />
+    }
 </div>

@@ -1,23 +1,35 @@
+using Laba4.Middleware;
+using Laba4.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PostCity.Data;
+using Microsoft.AspNetCore.Identity;
+using Laba4.Data;
 using PostCity.Data.Cache;
 using PostCity.Data.Cookies;
 using PostCity.Infrastructure.Filters;
-using PostCity.Middleware;
-using PostCity.ViewModels.Filters;
+using Laba4.Data.Cache;
+using Laba4.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
-// Enable Services
 IServiceCollection services = builder.Services;
 
-// Add Db context
-string? connection = builder.Configuration.GetConnectionString("SqlServerConnection");
+string connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
 
-services.AddDbContext<PostCityContext>(options =>
-{
-    options.UseSqlServer(connection);
-});
+builder.Services.AddDbContext<PostCityContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services
+    .AddDefaultIdentity<PostCityUser>()
+    .AddDefaultTokenProviders()
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<PostCityContext>();
+
+services.AddTransient<UserRegistrationManager>();
+
+
 
 
 services.AddMemoryCache();
@@ -28,32 +40,41 @@ services.AddTransient(typeof(FilterBy<>));
 services.AddTransient<CookiesManeger>();
 services.AddTransient(typeof(DatabaseSaveFilter));
 
+
 services.AddTransient<SubscriptionCache>();
 services.AddTransient<EmployeeCache>();
 services.AddTransient<OfficeCache>();
+services.AddTransient<RecipientCache>();
+services.AddTransient<UserCache>();
+services.AddTransient<PublicationCache>();
+services.AddTransient<CacheUpdater>();
+
+services.AddTransient<DbInitializer>();
+
+services.AddTransient<SessionLogger>();
 
 
 
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
 app.UseSession();
-app.UseDbInitializerMiddleware();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+app.UseDbInitializerMiddleware();
 app.UseStaticFiles();
-
 app.UseRouting();
 
+app.UseResponseCaching();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

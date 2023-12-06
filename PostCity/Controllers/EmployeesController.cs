@@ -1,10 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Laba4.Controllers;
+using Laba4.Data;
+using Laba4.Data.Cache;
+using Laba4.Models;
+using Laba4.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PostCity.Data;
 using PostCity.Data.Cache;
 using PostCity.Data.Cookies;
@@ -17,48 +26,51 @@ using PostCity.ViewModels.Sort;
 
 namespace PostCity.Controllers
 {
-    public class EmployeesController : Controller
+    [Authorize(Roles = "Admin")]
+    public class EmployeesController : Controller, ISortOrderController<Employee, EmployeeSortState>
     {
         private readonly PostCityContext _context;
         private readonly EmployeeCache _cache;
         private readonly CookiesManeger _cookies;
         private readonly FilterBy<Employee> _filter;
+        private readonly UserRegistrationManager _userRegistrationManager;
+        private readonly UserManager<PostCityUser> _userManager;
+        private readonly CacheUpdater _cacheUpdater;
+        private readonly SessionLogger _logger;
 
         public EmployeesController(PostCityContext context,
                                    EmployeeCache employeeCache,
                                    CookiesManeger cookiesManeger,
-                                   FilterBy<Employee> filter)
+                                   FilterBy<Employee> filter,
+                                   UserRegistrationManager userRegistrationManager,
+                                   UserManager<PostCityUser> userManager,
+                                   CacheUpdater cacheUpdater,
+                                   SessionLogger logger)
         {
             _context = context;
             _cache = employeeCache;
             _cookies = cookiesManeger;
             _filter = filter;
+            _userRegistrationManager = userRegistrationManager;
+            _userManager = userManager;
+            _cacheUpdater = cacheUpdater;
+            _logger = logger;
         }
 
         // GET: Employees
         public async Task<IActionResult> Index(EmployeeSortState sortOrder = EmployeeSortState.StandardState, int page = 1)
         {
-            var postCityContext = _context.Employees
-                                .Include(e => e.Position)
-                                .Include(e => e.Office)
-                                .ToList();
+            var postCityContext = _cache.Get();
 
             EmployeeFilterModel filterData = _cookies.GetFromCookies<EmployeeFilterModel>(Request.Cookies, "EmployeeFilterData");
 
             SetSortOrderViewData(sortOrder);
             postCityContext = ApplySortOrder(postCityContext, sortOrder).ToList();
 
-            int pageSize = 15;
-            _cache.Set(postCityContext);
-            var count = postCityContext.Count();
-            var items = postCityContext.Skip((page - 1) * pageSize).Take(pageSize);
+            int pageSize = 10;
 
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            EmployeeIndexViewModel viewModel = new EmployeeIndexViewModel(items, pageViewModel)
-            {
-                EmployeeFilterModel = filterData
-            };
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Employee, EmployeeFilterModel>(postCityContext, page, pageSize, filterData);
+            return View(pageViewModel);
         }
 
         [HttpPost]
@@ -67,9 +79,7 @@ namespace PostCity.Controllers
             _cache.Update();
             _cookies.SaveToCookies(Response.Cookies, "EmployeeFilterData", filterData);
 
-            var data = _context.Employees
-                                .Include(e => e.Position)
-                                .Include(e => e.Office).AsEnumerable();
+            var data = _cache.Get();
 
 
             data = _filter.FilterByString(data, pn => pn.Name, filterData.Name);
@@ -78,18 +88,10 @@ namespace PostCity.Controllers
             data = _filter.FilterByString(data, pn => pn.Office.StreetName, filterData.Office);
             data = _filter.FilterByString(data, pn => pn.Position.Position, filterData.Position);
 
-            int pageSize = 15;
+            int pageSize = 10;
             _cache.Set(data);
-            var count = data.Count();
-            var items = data.Skip((page - 1) * pageSize).Take(pageSize);
-
-            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            EmployeeIndexViewModel viewModel = new EmployeeIndexViewModel(items, pageViewModel)
-            {
-                EmployeeFilterModel = filterData
-            };
-
-            return View(viewModel);
+            var pageViewModel = new PageViewModel<Employee, EmployeeFilterModel>(data, page, pageSize, filterData);
+            return View(pageViewModel);
         }
         // GET: Employees/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -99,10 +101,7 @@ namespace PostCity.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees
-                .Include(e => e.Office)
-                .Include(e => e.Position)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var employee = _cache.Get().FirstOrDefault(m => m.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -112,6 +111,7 @@ namespace PostCity.Controllers
         }
 
         // GET: Employees/Create
+       [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName");
@@ -128,17 +128,60 @@ namespace PostCity.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
-                _cache.Update();
-                return RedirectToAction(nameof(Index));
+                if (Request.Cookies.TryGetValue("EmployeeCredentials", out string credentialsJson))
+                {
+                    var credentials = JsonConvert.DeserializeAnonymousType(credentialsJson, new { Email = "", Password = "" });
+
+                    using var transaction = await _context.Database.BeginTransactionAsync();
+
+                    try
+                    {
+
+                        _context.Add(employee);
+                        await _context.SaveChangesAsync();
+
+                        var result = await _userRegistrationManager.RegisterUserWithRole(new PostCityUserModel()
+                        {
+                            Role = "Employee",
+                            Email = credentials.Email,
+                            Password = credentials.Password,
+                            UserId = employee.Id
+                        });
+
+                        if (result.Succeeded)
+                        {
+                            transaction.Commit();
+                            _cacheUpdater.Update(_cache);
+                            _logger.LogInformation($"Add new employee ({employee.FullName})");
+                            return Redirect("/User/Index");
+
+                        }
+                        else
+                        {
+                            transaction.Rollback();
+                            _context.Employees.Remove(employee);
+
+                            foreach (var error in result.Errors)
+                            {
+                                ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName");
+                                ViewData["PositionId"] = new SelectList(_context.EmployeePositions, "Id", "Position");
+                                return View(employee);
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                    }
+                }
             }
-            ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName", employee.OfficeId);
-            ViewData["PositionId"] = new SelectList(_context.EmployeePositions, "Id", "Position", employee.PositionId);
+            ViewData["OfficeId"] = new SelectList(_context.Offices, "Id", "StreetName");
+            ViewData["PositionId"] = new SelectList(_context.EmployeePositions, "Id", "Position");
             return View(employee);
         }
 
         // GET: Employees/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Employees == null)
@@ -161,6 +204,7 @@ namespace PostCity.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Middlename,Surname,PositionId,OfficeId")] Employee employee)
         {
             if (id != employee.Id)
@@ -174,7 +218,8 @@ namespace PostCity.Controllers
                 {
                     _context.Update(employee);
                     await _context.SaveChangesAsync();
-                    _cache.Update();
+                    _cacheUpdater.Update(_cache);
+                    _logger.LogInformation($"Edit employee ({employee.FullName})");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -195,6 +240,7 @@ namespace PostCity.Controllers
         }
 
         // GET: Employees/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Employees == null)
@@ -202,10 +248,7 @@ namespace PostCity.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees
-                .Include(e => e.Office)
-                .Include(e => e.Position)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var employee =_cache.Get().FirstOrDefault(m => m.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -227,9 +270,16 @@ namespace PostCity.Controllers
             if (employee != null)
             {
                 _context.Employees.Remove(employee);
+                _logger.LogInformation($"Delete employee ({employee.FullName})");
             }
-            
-            await _context.SaveChangesAsync();
+
+            int isDelete = await _context.SaveChangesAsync();
+            if (isDelete == 1)
+            {
+                PostCityUser user = _context.FindUserByUserId(employee.Id);
+                IdentityResult result = await _userManager.DeleteAsync(user);
+            }
+            _cacheUpdater.Update(_cache);
             return RedirectToAction(nameof(Index));
         }
 

@@ -39,15 +39,44 @@
                 ? data.Where(item => propertySelector(item).Contains(filterValue ?? ""))
                 : data;
         }
-
-        public IEnumerable<T> FilterByNullableString(
-            IEnumerable<T> data,
-            Func<T, string?> propertySelector,
-            string filterValue)
+        public IEnumerable<T> FilterByDecimal(
+        IEnumerable<T> data,
+        Func<T, decimal> propertySelector,
+        decimal? filterValue,
+        decimal tolerance = 1)
         {
-            return !string.IsNullOrEmpty(filterValue)
-                ? data.Where(item => propertySelector(item)?.Contains(filterValue ?? "") == true)
-                : data;
+            if (filterValue != null)
+            {
+                return data.Where(item => Math.Abs(propertySelector(item) - filterValue.Value) <= tolerance);
+            }
+            else
+            {
+                return data;
+            }
+        }
+
+        public IEnumerable<T> FilterByPeriod(
+            IEnumerable<T> data,
+            Func<T, DateTime> propertySelector,
+            DateTime? startDate,
+            DateTime? endDate)
+        {
+            if (startDate != null && endDate != null)
+            {
+                return data.Where(item => propertySelector(item) >= startDate && propertySelector(item) <= endDate);
+            }
+            else if (startDate != null)
+            {
+                return data.Where(item => propertySelector(item) >= startDate);
+            }
+            else if (endDate != null)
+            {
+                return data.Where(item => propertySelector(item) <= endDate);
+            }
+            else
+            {
+                return data;
+            }
         }
     }
 }

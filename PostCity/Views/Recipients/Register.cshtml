@@ -1,0 +1,72 @@
+﻿@model PostCity.Models.Recipient
+
+@{
+    ViewData["Title"] = "User Data";
+}
+
+<h1>Create user data</h1>
+
+<h4>Recipient</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4 mx-auto my-4">
+
+        <form asp-action="Register">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" value="@ViewData["Name"]" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Middlename" class="control-label"></label>
+                <input asp-for="Middlename" class="form-control" value="@ViewData["Middlename"]" />
+                <span asp-validation-for="Middlename" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Surname" class="control-label"></label>
+                <input asp-for="Surname" class="form-control" value="@ViewData["Surname"]" />
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MobilePhone" class="control-label"></label>
+                <input asp-for="MobilePhone" class="form-control" value="@ViewData["MobilePhone"]"  pattern="^\+375\d{9}$" title="Enter a valid phone number in the format +375999999999" placeholder="+375000000000"/>
+                <span asp-validation-for="MobilePhone" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label><br />
+                @if (ViewData["Address"] != null)
+                {
+                        <p>@ViewData["Address"]</p>
+                }
+                else{
+                    <button type="submit" value="SaveFields" asp-action="SaveFields" class="btn btn-primary btn-block">Add Address</button>
+                }
+                
+            </div>
+
+            @if (ViewData["ErrorMessage"] != null)
+            {
+                        <div class="alert alert-danger" role="alert">
+                    @ViewData["ErrorMessage"]
+                        </div>
+            }
+            <br />
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

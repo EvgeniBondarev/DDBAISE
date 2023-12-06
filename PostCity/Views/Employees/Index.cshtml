@@ -1,16 +1,21 @@
 ﻿@using PostCity.ViewModels
 @using PostCity.ViewModels.Sort
+@using PostCity.ViewModels.Filters.FilterModel
 
-@model EmployeeIndexViewModel
+@model PageViewModel<Employee, EmployeeFilterModel>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Employee";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Employees</h1>
+
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a href="/Identity/Account/Create">Create New</a>
+</p>
+<p>
+    <a asp-action="Index" asp-controller="EmployeePositions">Positions</a>
 </p>
 <script>
     function clearForm() {
@@ -33,23 +38,23 @@
                     <form asp-action="Index" method="post">
                         <div class="mb-2">
                             <label for="nameFilter" class="form-label">Name:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Name" id="nameFilter" name="Name" class="form-control form-control-sm"/><br />
+                            <input asp-for="@Model.FilterModel.Name" id="nameFilter" name="Name" class="form-control form-control-sm"/><br />
                         </div>
                         <div class="mb-2">
                             <label for="middlenameFilter" class="form-label">Middlename:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Middlename" id="middlenameFilter" name="Middlename" class="form-control form-control-sm"/><br />
+                            <input asp-for="@Model.FilterModel.Middlename" id="middlenameFilter" name="Middlename" class="form-control form-control-sm"/><br />
                         </div>
                         <div class="mb-2">
                             <label for="surnameFilter" class="form-label">Surname:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Surname" id="surnameFilter" name="Surname" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.Surname" id="surnameFilter" name="Surname" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="officeFilter" class="form-label">Office:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Office" id="officeFilter" name="Office" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.Office" id="officeFilter" name="Office" class="form-control form-control-sm" /><br />
                         </div>
                         <div class="mb-2">
                             <label for="positionFilter" class="form-label">Position:</label>
-                            <input asp-for="@Model.EmployeeFilterModel.Position" id="positionFilter" name="Position" class="form-control form-control-sm" /><br />
+                            <input asp-for="@Model.FilterModel.Position" id="positionFilter" name="Position" class="form-control form-control-sm" /><br />
                         </div>
               
                         <button type="submit" class="btn btn-primary">Apply Filters</button><br />
@@ -59,118 +64,122 @@
             </div>
         </div>
 
-        <div class="col-md-10">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+    <div class="col-md-10">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
                                 @if (ViewBag.NameSort == EmployeeSortState.NameAsc)
                                 {
-                                    <p>Name ↑</p>
+                                <b>Name ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Name ↓</p>
+                                <b>Name ↓</b>
                                 }
-
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.MiddlenameSort">
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.MiddlenameSort">
                                 @if (ViewBag.MiddlenameSort == EmployeeSortState.MiddlenameAsc)
                                 {
-                                    <p>Middlename ↑</p>
+                                <b>Middlename ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Middlename ↓</p>
+                                <b>Middlename ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.SurnameSort">
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.SurnameSort">
                                 @if (ViewBag.SurnameSort == EmployeeSortState.SurnameAsc)
                                 {
-                                    <p>Surname ↑</p>
+                                <b>Surname ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Surname ↓</p>
+                                <b>Surname ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.OfficeSort">
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.OfficeSort">
                                 @if (ViewBag.OfficeSort == EmployeeSortState.OfficeAsc)
                                 {
-                                    <p>Office ↑</p>
+                                <b>Office ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Office ↓</p>
+                                <b>Office ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th>
-                            <a asp-action="Index" asp-route-sortOrder="@ViewBag.PositionSort">
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewBag.PositionSort">
                                 @if (ViewBag.PositionSort == EmployeeSortState.PositionAsc)
                                 {
-                                    <p>Position ↑</p>
+                                <b>Position ↑</b>
                                 }
                                 else
                                 {
-                                    <p>Position ↓</p>
+                                <b>Position ↓</b>
                                 }
-                            </a>
-                        </th>
-                        <th> </th>
-                    </tr>
-                </thead>
-                <tbody>
-            @foreach (var item in Model.Model) {
+                    </a>
+                </th>
+                <th><b>Actions</b></th>
+            </tr>
+        </thead>
+        <tbody>
+                    @foreach (var item in Model.Items)
+                    {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Name)
+                                @Html.DisplayFor(modelItem => item.Name)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Middlename)
+                                @Html.DisplayFor(modelItem => item.Middlename)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Surname)
+                                @Html.DisplayFor(modelItem => item.Surname)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Office.StreetName)
+                                @Html.DisplayFor(modelItem => item.Office.StreetName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Position.Position)
+                                @Html.DisplayFor(modelItem => item.Position.Position)
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            <div class="btn-group">
+                                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                    <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                    <a class="btn btn-primary" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </div>
                         </td>
                     </tr>
-            }
+                    }
                 </tbody>
             </table>
             <p>
-                @if (Model.PageViewModel.HasPreviousPage)
+                @if (Model.HasPreviousPage)
                 {
-                    <a asp-action="Index"
-                   asp-route-page="@(Model.PageViewModel.PageNumber - 1)" class="glyphicon glyphicon-chevron-left">
-                        Назад
-                    </a>
+                                <a asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                                    </svg>
+                            </a>
                 }
 
-                @if (Model.PageViewModel.HasNextPage)
+                @if (Model.HasNextPage)
                 {
-                    <a asp-action="Index"
-                   asp-route-page="@(Model.PageViewModel.PageNumber + 1)" class="glyphicon glyphicon-chevron-right">
-                        Вперед
-                    </a>
+                                <a asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                                    </svg>
+                            </a>
                 }
             </p>
         </div>
-    </div>
+      </div>
 </div>
