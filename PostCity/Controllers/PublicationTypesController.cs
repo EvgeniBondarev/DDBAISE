@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Laba4.Models;
-using PostCity.Models;
-using Laba4.Data.Cache;
 using Microsoft.AspNetCore.Authorization;
+using Repository.Models;
+using Service.Data.Cache;
+using Utils;
+using Domains.Models;
 
-namespace Laba4.Controllers
+namespace PostCity.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class PublicationTypesController : Controller

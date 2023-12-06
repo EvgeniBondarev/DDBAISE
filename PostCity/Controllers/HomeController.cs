@@ -1,14 +1,12 @@
-﻿
-using Laba4.Models;
+﻿using Domains.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
-using Newtonsoft.Json;
-using PostCity.Data.Cache;
-using PostCity.Models;
+using Repository.Models;
 using System.Diagnostics;
 
-namespace Laba4.Controllers
+
+namespace PostCity.Controllers
 {
     public class HomeController : Controller
     {

@@ -1,7 +1,4 @@
-﻿using Laba4.ViewModels.Sort;
-using Laba4.ViewModels;
-
-namespace Laba4.Controllers
+﻿namespace PostCity.Controllers
 {
     public interface ISortOrderController<T, K>
     {

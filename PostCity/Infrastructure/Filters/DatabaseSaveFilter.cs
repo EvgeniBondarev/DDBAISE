@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
-using PostCity.Models;
-using PostCity.Data.Cache;
+using Service.Data.Cache;
 
 namespace PostCity.Infrastructure.Filters
 {

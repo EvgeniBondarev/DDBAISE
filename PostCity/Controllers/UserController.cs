@@ -1,22 +1,17 @@
-﻿using Laba4.Data.Cache;
-using Laba4.Models;
-using Laba4.ViewModels;
+﻿using Domains.Models;
+using Domains.ViewModels;
+using Domains.ViewModels.Filters.FilterModel;
+using Domains.ViewModels.Sort;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PostCity.Models;
-using PostCity.ViewModels.Filters;
-using PostCity.ViewModels;
-using Laba4.ViewModels.Filters.FilterModel;
-using System.Net;
-using PostCity.Data.Cookies;
-using PostCity.Infrastructure.Filters;
-using PostCity.ViewModels.Sort;
-using Laba4.ViewModels.Sort;
-using PostCity.Data.Cache;
+using PostCity.Controllers;
+using Repository.Models;
+using Service.Data.Cache;
+using Service.Data.Cookies;
+using Utils;
 
-namespace Laba4.Controllers
+namespace PostCity.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class UserController : Controller, ISortOrderController<UserViewModel, UserSortState>

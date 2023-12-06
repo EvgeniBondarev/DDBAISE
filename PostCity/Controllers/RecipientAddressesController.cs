@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Laba4.Models;
-using PostCity.Models;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
-using System.Data;
+using Repository.Models;
+using Utils;
+using Domains.Models;
 
-namespace Laba4.Controllers
+namespace PostCity.Controllers
 {
     public class RecipientAddressesController : Controller
     {

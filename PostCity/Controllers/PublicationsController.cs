@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Laba4.Models;
-using PostCity.Models;
-using Microsoft.Data.SqlClient;
-using PostCity.ViewModels.Filters.FilterModel;
-using PostCity.ViewModels;
-using System.Net;
-using PostCity.ViewModels.Sort;
-using Laba4.ViewModels.Sort;
-using PostCity.Data.Cache;
-using PostCity.Data.Cookies;
-using PostCity.Infrastructure.Filters;
-using Laba4.Data.Cache;
-using Laba4.ViewModels.Filters.FilterModel;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using PostCity.Controllers;
+using Domains.Models;
+using Domains.ViewModels.Sort;
+using Repository.Models;
+using Service.Data.Cache;
+using Service.Data.Cookies;
+using Utils;
+using Domains.ViewModels.Filters.FilterModel;
+using Domains.ViewModels;
 
-namespace Laba4.Controllers
+namespace PostCity.Controllers
 {
  
     public class PublicationsController : Controller, ISortOrderController<Publication, PublicationSortState>

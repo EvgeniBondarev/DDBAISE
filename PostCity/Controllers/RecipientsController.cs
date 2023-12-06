@@ -5,26 +5,21 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Laba4.Models;
-using PostCity.Models;
-using PostCity.ViewModels.Filters.FilterModel;
-using PostCity.ViewModels.Sort;
-using PostCity.ViewModels;
-using System.Net;
-using Laba4.ViewModels.Sort;
-using PostCity.Data.Cache;
-using PostCity.Data.Cookies;
-using PostCity.Infrastructure.Filters;
-using Laba4.Data.Cache;
-using Laba4.ViewModels.Filters.FilterModel;
-using PostCity.ViewModels.Filters;
 using Newtonsoft.Json;
-using Laba4.Data;
-using Laba4.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using PostCity.Controllers;
+using Domains.Models;
+using Domains.ViewModels.Sort;
+using Repository.Models;
+using Service.Data.Cache;
+using Service.Data.Cookies;
+using Utils;
+using Domains.ViewModels.Filters.FilterModel;
+using Domains.ViewModels;
+using Domains.Models.Identity;
 
-namespace Laba4.Controllers
+namespace PostCity.Controllers
 {
     
     public class RecipientsController : Controller, ISortOrderController<Recipient, RecipientSortState>

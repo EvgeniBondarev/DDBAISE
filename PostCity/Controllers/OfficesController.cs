@@ -1,26 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PostCity.Data;
-using PostCity.Models;
-using PostCity.ViewModels.Filters.FilterModel;
-using PostCity.ViewModels.Sort;
-using PostCity.ViewModels;
-using PostCity.Data.Cache;
-using PostCity.Data.Cookies;
-using PostCity.Infrastructure.Filters;
-using PostCity.ViewModels.Filters;
-using Laba4.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
-using Laba4.Data.Cache;
-using Laba4.Controllers;
+using Domains.Models;
+using Domains.ViewModels.Sort;
+using Repository.Models;
+using Service.Data.Cache;
+using Service.Data.Cookies;
+using Utils;
+using Domains.ViewModels.Filters.FilterModel;
+using Domains.ViewModels;
 
 namespace PostCity.Controllers
 {

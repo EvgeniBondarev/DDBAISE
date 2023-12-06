@@ -1,0 +1,15 @@
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.csproj.AssemblyReference.cache
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.AssemblyInfoInputs.cache
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.AssemblyInfo.cs
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.csproj.CoreCompileInputs.cache
+C:\Users\Evgeni\Desktop\labs\C#\Repository\bin\Debug\net6.0\Repository.deps.json
+C:\Users\Evgeni\Desktop\labs\C#\Repository\bin\Debug\net6.0\Repository.dll
+C:\Users\Evgeni\Desktop\labs\C#\Repository\bin\Debug\net6.0\Repository.pdb
+C:\Users\Evgeni\Desktop\labs\C#\Repository\bin\Debug\net6.0\Domains.dll
+C:\Users\Evgeni\Desktop\labs\C#\Repository\bin\Debug\net6.0\Domains.pdb
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.csproj.CopyComplete
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.dll
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\refint\Repository.dll
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\Repository.pdb
+C:\Users\Evgeni\Desktop\labs\C#\Repository\obj\Debug\net6.0\ref\Repository.dll

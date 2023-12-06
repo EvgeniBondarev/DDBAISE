@@ -5,20 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PostCity.Data;
-using PostCity.Models;
-using PostCity.Data.Cache;
-using PostCity.ViewModels.Filters;
-using PostCity.ViewModels;
-using PostCity.ViewModels.Sort;
-using PostCity.Infrastructure.Filters;
-using Newtonsoft.Json;
-using PostCity.Data.Cookies;
-using Laba4.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using Newtonsoft.Json.Linq;
-using Laba4.Controllers;
+using Domains.Models;
+using Domains.ViewModels.Sort;
+using Repository.Models;
+using Service.Data.Cache;
+using Service.Data.Cookies;
+using Utils;
+using Domains.ViewModels;
+using Domains.ViewModels.Filters.FilterModel;
 
 namespace PostCity.Controllers
 {

@@ -1,14 +1,14 @@
-using Laba4.Middleware;
-using Laba4.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Laba4.Data;
-using PostCity.Data.Cache;
-using PostCity.Data.Cookies;
 using PostCity.Infrastructure.Filters;
-using Laba4.Data.Cache;
-using Laba4.Controllers;
+using Repository.Models;
+using Domains.Models;
+using Utils;
+using Service.Data.Cookies;
+using Service.Data.Cache;
+using Repository.Data;
+using PostCity.Middleware;
+using PostCity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();

@@ -1,8 +1,9 @@
-﻿using Laba4.Data;
-using Laba4.Models;
+﻿using Domains.Models;
 using Microsoft.AspNetCore.Identity;
+using Repository.Data;
+using Repository.Models;
 
-namespace Laba4.Middleware
+namespace PostCity.Middleware
 {
     public class DbInitializerMiddleware
     {

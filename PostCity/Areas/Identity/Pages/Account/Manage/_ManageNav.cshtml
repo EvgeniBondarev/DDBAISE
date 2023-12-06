@@ -1,4 +1,4 @@
-﻿@using Laba4.Models
+﻿@using Domains.Models
 @inject SignInManager<PostCityUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();

@@ -3,26 +3,21 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Laba4.Controllers;
-using Laba4.Data;
-using Laba4.Data.Cache;
-using Laba4.Models;
-using Laba4.Models.Identity;
+using Domains.Models;
+using Domains.Models.Identity;
+using Domains.ViewModels;
+using Domains.ViewModels.Filters.FilterModel;
+using Domains.ViewModels.Sort;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using PostCity.Data;
-using PostCity.Data.Cache;
-using PostCity.Data.Cookies;
-using PostCity.Infrastructure.Filters;
-using PostCity.Models;
-using PostCity.ViewModels;
-using PostCity.ViewModels.Filters;
-using PostCity.ViewModels.Filters.FilterModel;
-using PostCity.ViewModels.Sort;
+using Repository.Models;
+using Service.Data.Cache;
+using Service.Data.Cookies;
+using Utils;
 
 namespace PostCity.Controllers
 {
