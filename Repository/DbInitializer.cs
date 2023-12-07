@@ -14,8 +14,8 @@ namespace Repository.Data
         private readonly UserManager<PostCityUser> _userManager;
 
 
-        public DbInitializer(PostCityContext context,  
-                            RoleManager<IdentityRole> roleManager, 
+        public DbInitializer(PostCityContext context,
+                            RoleManager<IdentityRole> roleManager,
                             UserManager<PostCityUser> userManager)
         {
             _context = context;
@@ -80,7 +80,7 @@ namespace Repository.Data
 
             _context.SaveChanges();
 
-           
+
         }
 
 
