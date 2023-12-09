@@ -1,14 +1,16 @@
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using PostCity.Infrastructure.Filters;
-using Repository.Models;
 using Domains.Models;
-using Utils;
-using Service.Data.Cookies;
-using Service.Data.Cache;
-using Repository.Data;
 using PostCity.Middleware;
 using PostCity;
+using Repository.Data;
+using Repository.Models;
+using Service.Data.Cache;
+using Service.Data.Cookies;
+using Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
