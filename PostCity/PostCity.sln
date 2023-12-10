@@ -5,11 +5,13 @@ VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostCity", "PostCity.csproj", "{22DE5B94-DC92-4FF2-A416-F5BF8BC960D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "..\Repository\Repository.csproj", "{E018BBD2-76D3-4614-ADD7-1350829E4682}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "..\Repository\Repository.csproj", "{E018BBD2-76D3-4614-ADD7-1350829E4682}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domains", "..\Domains\Domains.csproj", "{559A28C2-D093-44A4-B6C7-6341F70A5A6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domains", "..\Domains\Domains.csproj", "{559A28C2-D093-44A4-B6C7-6341F70A5A6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "..\Service\Service.csproj", "{CA08F6BB-8DAE-44B5-A8C8-D40E2D34D83D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "..\Service\Service.csproj", "{CA08F6BB-8DAE-44B5-A8C8-D40E2D34D83D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagram", "..\Diagram\Diagram.csproj", "{2B291FA9-D518-480E-8BB7-27BB94DE7DBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{CA08F6BB-8DAE-44B5-A8C8-D40E2D34D83D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA08F6BB-8DAE-44B5-A8C8-D40E2D34D83D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA08F6BB-8DAE-44B5-A8C8-D40E2D34D83D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B291FA9-D518-480E-8BB7-27BB94DE7DBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B291FA9-D518-480E-8BB7-27BB94DE7DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B291FA9-D518-480E-8BB7-27BB94DE7DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B291FA9-D518-480E-8BB7-27BB94DE7DBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
