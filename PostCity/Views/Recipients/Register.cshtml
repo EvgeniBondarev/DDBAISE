@@ -7,6 +7,7 @@
 <h1>Create user data</h1>
 
 <h4>Recipient</h4>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <hr />
 <div class="row">
     <div class="col-md-4 mx-auto my-4">
@@ -64,6 +65,21 @@
         </form>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('form').submit(function (event) {
+            var phoneNumberInput = $('#MobilePhone');
+            var phoneNumberPattern = /^\+375\d{9}$/;
+
+            if (!phoneNumberPattern.test(phoneNumberInput.val())) {
+                event.preventDefault(); // Остановка отправки формы
+                var errorMessage = 'Please enter a valid phone number in the format +375999999999';
+                $('#MobilePhone').attr('title', errorMessage);
+            }
+        });
+    });
+</script>
 
 
 

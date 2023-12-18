@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PostCity.Controllers;
-using Repository.Models;
+using Repository;
 using Service.Data.Cache;
 using Service.Data.Cookies;
 using Utils;

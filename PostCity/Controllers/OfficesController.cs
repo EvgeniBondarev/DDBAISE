@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using Domains.Models;
 using Domains.ViewModels.Sort;
-using Repository.Models;
+using Repository;
 using Service.Data.Cache;
 using Service.Data.Cookies;
 using Utils;

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
-using Repository.Models;
+using Repository;
 using Utils;
 using Domains.Models;
 

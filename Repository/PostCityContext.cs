@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Repository.Models;
+namespace Repository;
 
 public partial class PostCityContext : IdentityDbContext<PostCityUser>
 {
@@ -14,6 +14,7 @@ public partial class PostCityContext : IdentityDbContext<PostCityUser>
     public PostCityContext(DbContextOptions<PostCityContext> options)
         : base(options)
     {
+
     }
     public virtual DbSet<Employee> Employees { get; set; }
 

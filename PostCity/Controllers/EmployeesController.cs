@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Repository.Models;
+using Repository;
 using Service.Data.Cache;
 using Service.Data.Cookies;
 using Utils;

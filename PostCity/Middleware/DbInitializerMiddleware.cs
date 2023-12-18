@@ -1,7 +1,8 @@
 ﻿using Domains.Models;
 using Microsoft.AspNetCore.Identity;
+using Repository;
 using Repository.Data;
-using Repository.Models;
+
 
 namespace PostCity.Middleware
 {

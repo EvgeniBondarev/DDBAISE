@@ -1,7 +1,7 @@
 ﻿using Domains.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Repository.Models;
+using Repository;
 using System.Globalization;
 
 namespace Repository.Data
@@ -75,7 +75,7 @@ namespace Repository.Data
             }
             if (!_context.Subscriptions.Any())
             {
-                InitializeSubscriptions();
+               InitializeSubscriptions();
             }
 
             _context.SaveChanges();
@@ -160,7 +160,7 @@ namespace Repository.Data
 
                 var publicationTypes = _context.PublicationTypes.ToList();
 
-                for (int i = 0; i <= 100; i++)
+                for (int i = 0; i <= 1_000; i++)
                 {
                     var randomType = publicationTypes[_random.Next(publicationTypes.Count())];
                     var randomName = publicationNames[_random.Next(publicationNames.Count())];
@@ -200,7 +200,7 @@ namespace Repository.Data
                 var employeePositions = _context.EmployeePositions.ToList();
                 var offices = _context.Offices.ToList();
 
-                for (int i = 0; i <= 100; i++)
+                for (int i = 0; i <= 1_000; i++)
                 {
                     var randomPosition = employeePositions[_random.Next(employeePositions.Count())];
                     var randomOffice = offices[_random.Next(offices.Count())];
@@ -223,7 +223,7 @@ namespace Repository.Data
         {
             if (!_context.Offices.Any())
             {
-                for (int i = 0; i <= 100; i++)
+                for (int i = 0; i <= 1_000; i++)
                 {
                     var randomStreet = streetNames[_random.Next(streetNames.Length)];
                     var house = _random.Next(1, 101);
@@ -248,7 +248,7 @@ namespace Repository.Data
             if (!_context.RecipientAddresses.Any())
             {
 
-                for (int i = 0; i <= 100; i++)
+                for (int i = 0; i <= 1_000; i++)
                 {
                     var randomStreet = streetNames[_random.Next(streetNames.Length)];
                     var house = _random.Next(1, 101);
@@ -272,7 +272,7 @@ namespace Repository.Data
             {
                 var recipientAddresses = _context.RecipientAddresses.ToList();
 
-                for (int i = 0; i <= 100; i++)
+                for (int i = 0; i <= 1_000; i++)
                 {
                     var randomAddress = recipientAddresses[_random.Next(recipientAddresses.Count())];
 
@@ -292,14 +292,12 @@ namespace Repository.Data
 
         private void InitializeSubscriptions()
         {
-            if (!_context.Subscriptions.Any())
-            {
                 var recipients = _context.Recipients.ToList();
                 var publications = _context.Publications.ToList();
                 var offices = _context.Offices.ToList();
                 var employees = _context.Employees.ToList();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 5_000; i++)
                 {
                     var randomRecipient = recipients[_random.Next(recipients.Count())];
                     var randomPublication = publications[_random.Next(publications.Count())];
@@ -320,8 +318,6 @@ namespace Repository.Data
                             SubscriptionStartDate = startDate
                         });
                     }
-                }
-
                 _context.SaveChanges();
             }
         }

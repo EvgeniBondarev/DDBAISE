@@ -253,7 +253,6 @@ C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.GeneratedMSBu
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.AssemblyInfoInputs.cache
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.AssemblyInfo.cs
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.csproj.CoreCompileInputs.cache
-C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.RazorAssemblyInfo.cache
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.RazorAssemblyInfo.cs
@@ -274,3 +273,4 @@ C:\Users\Evgeni\Desktop\labs\C#\PostCity\bin\Debug\net6.0\Service.dll
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\bin\Debug\net6.0\Domains.pdb
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\bin\Debug\net6.0\Repository.pdb
 C:\Users\Evgeni\Desktop\labs\C#\PostCity\bin\Debug\net6.0\Service.pdb
+C:\Users\Evgeni\Desktop\labs\C#\PostCity\obj\Debug\net6.0\PostCity.MvcApplicationPartsAssemblyInfo.cs

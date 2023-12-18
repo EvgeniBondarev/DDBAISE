@@ -2,7 +2,7 @@
 using Domains.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
-using Repository.Models;
+using Repository;
 
 namespace Service.Data.Cache
 {

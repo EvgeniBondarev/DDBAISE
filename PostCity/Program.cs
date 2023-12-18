@@ -7,10 +7,11 @@ using Domains.Models;
 using PostCity.Middleware;
 using PostCity;
 using Repository.Data;
-using Repository.Models;
+using Repository;
 using Service.Data.Cache;
 using Service.Data.Cookies;
 using Utils;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -21,7 +22,7 @@ IServiceCollection services = builder.Services;
 string connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
 
 builder.Services.AddDbContext<PostCityContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, b => b.MigrationsAssembly("Repository")));
 
 builder.Services
     .AddDefaultIdentity<PostCityUser>()

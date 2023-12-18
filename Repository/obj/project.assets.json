@@ -2808,7 +2808,6 @@
   "projectFileDependencyGroups": {
     "net6.0": [
       "Domains >= 1.0.0",
-      "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 6.0.23",
       "Microsoft.EntityFrameworkCore.Relational >= 7.0.13",
       "Microsoft.EntityFrameworkCore.SqlServer >= 7.0.13"
     ]
@@ -2862,10 +2861,6 @@
       "net6.0": {
         "targetAlias": "net6.0",
         "dependencies": {
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
-            "target": "Package",
-            "version": "[6.0.23, )"
-          },
           "Microsoft.EntityFrameworkCore.Relational": {
             "target": "Package",
             "version": "[7.0.13, )"
